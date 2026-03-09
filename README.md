@@ -81,4 +81,4 @@ More tools coming.
 
 ---
 
-MIT License
+© 2025 Irfan M — CC BY-NC-ND 4.0 — Personal and educational use only. Redistribution and derivatives not permitted.
