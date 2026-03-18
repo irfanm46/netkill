@@ -135,7 +135,7 @@ Built by **Irfan** — fresher targeting GRC Analyst / InfoSec Analyst roles. Le
 
 ## License
 
-MIT — free to use, modify, and share.
+NetKill is licensed under the [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](LICENSE.txt) license. You are free to use and share this project for non-commercial purposes, as long as you provide attribution and do not create derivatives.
 
 ---
 
